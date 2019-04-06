@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: "Trebuchet MS", Helvetica, sans-serif;
+        }
+
+        body {
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-family: Verdana, Geneva, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        .teaser {
+            position: relative;
+        }
+
+        img,
+        video {
+            width: 100%;
+        }
+
+        .teaser .mask {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: #2c3e50;
+            opacity: 0.5;
+        }
+
+        .teaser .teaser-content {
+            position: absolute;
+            bottom: 30%;
+            /* left: 50%;
+            transform: translate(-50%, -50%); */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .teaser-content h1 {
+            color: #ecf0f1;
+            font-size: calc(0.5rem + 2.5vw);
+            margin-bottom: 0;
+            margin-top: 0;
+            letter-spacing: 0.25rem;
+            text-align: center;
+            width: 80%;
+            margin-bottom: 4rem;
+        }
+
+        .teaser .jump-btn-group {
+            display: flex;
+            justify-content: space-around;
+            border: 1px #fff solid;
+            border-radius: 4px;
+        }
+
+        .teaser .jump-btn:hover {
+            background-color: rgba(255, 255, 255, 0.075);
+        }
+
+        .teaser .jump-btn {
+            border-left: 0.5px #fff solid;
+            min-width: 6rem;
+            height: 2.5rem;
+            padding-left: 1rem;
+            padding-right: 1rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #fff;
+            cursor: pointer;
+            letter-spacing: 0.2rem;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            text-decoration: none;
+        }
+
+        section {
+            margin: 32px auto;
+        }
+
+        section h2 {
+            text-align: center;
+        }
+
+        .abstract {
+            text-align: justify;
+        }
+
+        .examples .gallary {
+            width: 120%;
+            margin-left: -10%;
+        }
+        .examples .item img {
+            /* max-height: 100%;
+            max-width: 100%;
+            height: auto;
+            width: auto; */
+            position: relative;
+            top: 50%;
+            transform: translateY(-50%);
+
+        }
+        .examples .gallary .item {
+            width: 24%;
+            /* height: 256px; */
+            text-align: center;
+            border: 1px solid #dddddd;
+            border-radius: 5px;
+            margin-bottom: 8px;
+        }
+
+        table {
+            font-family: arial, sans-serif;
+            border-collapse: collapse;
+            width: 100%;
+            margin: 8px;
+        }
+
+        td, th {
+            border: 1px solid #dddddd;
+            text-align: left;
+            padding: 8px;
+        }
+
+        tr:nth-child(even) {
+            background-color: #dddddd;
+        }
+
+        .gallary {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-content: space-between;
+            padding: 8px 8px 0px 8px;
+        }
+        .gallary:hover{
+            border: 1px solid #27ae60;
+            border-radius: 10px;
+        }
+
+        .paper .gallary .item {
+            width: 19%;
+            margin-bottom: 8px;
+        }
+
+        .paper .gallary img {
+            /* padding: 10px 5px 10px 5px; */
+            border: 1px solid #dddddd;
+            border-radius: 5px;
+        }
+
+    </style>
+    <script src="//code.jquery.com/jquery-3.3.1.min.js"></script>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
+    <script src="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+    
+    
+</head>
+
+<body>
+    <div class="teaser">
+        <img src="./figs/bg4_low.JPG" />
+        <div class="mask"></div>
+        <div class="teaser-content">
+            <h1>Towards Automated Infographic Design: Deep Learning-based Auto-Generation of Extensible Timeline</h1>
+            <div class="jump-btn-group">
+                <a href="#abstract" class="jump-btn">Abstract</a>
+                <a href="#labels" class="jump-btn">Labels</a>
+                <a href="#architecture" class="jump-btn">Architecture</a>
+                <a href="#paper" class="jump-btn">Paper</a>
+                <a href="#examples" class="jump-btn">Examples</a>
+            </div>
+        </div>
+    </div>
+    <div class="content" style="width:80vw;max-width: 1024px;">
+        <section id="abstract" class="abstract">
+            <h2>Abstract</h2>
+            Designers need to consider not only perceptual effectiveness but also visual styles when creating an infographic. This process can be difficult and time consuming for professional designers, not to mention non-expert users, leading to the demands of automated infographics design. As a first step, we focus on timeline infographics, which have been widely used for centuries. We contribute an end-to-end approach that automatically extracts an extensible and extendable timeline template from a bitmap image. Our approach adopts a deconstruction and reconstruction paradigm. At the deconstruction stage, we propose a multi-task deep neural network that simultaneously parses two kinds of information from a bitmap timeline: 1) the global information, which includes the <em>representation</em>, <em>scale</em>, <em>layout</em>, and <em>orientation</em> of the timeline, and 2) the local information, which includes the location, category, and pixels of each visual element on the timeline. At the reconstruction stage, we propose a pipeline with three techniques, i.e., <em>Non-Maximum Merging</em>, <em>Redundancy Recover</em>, and <em>DL GrabCut</em>, to extract an extensible template from the infographic, by utilizing the deconstruction results. To evaluate the effectiveness of our approach, we synthesize a timeline dataset (4296 images) and collect a real-world timeline dataset (393 images) from the Internet. We first report quantitative evaluation results of our approach over the two datasets. Then, we present examples of automatically extracted templates and timelines automatically generated based on
+            these templates to qualitatively demonstrate the performance. The results confirm that our approach can effectively extract extensible templates from real-world timeline infographics.
+        </section>
+        <hr />
+        <section id="labels" class="labels">
+            <h2>Labels of elements</h2>
+            <figure style="text-align: center;
+            width: 70%;
+            margin: 0 auto 20px auto;">
+                <img src="figs/34_labels.png" alt='missing' />
+                <figcaption>Categories of elements in a timeline infographic. The <emph>event mark</emph>, <emph>annotation mark</emph>, 
+                    and <emph>main body</emph> can be reused, while others need to be updated.</figcaption>
+            </figure>
+
+            To identify the categories of elements in a timeline,
+            four of the coauthors independently reviewed all the timelines in our two datasets.
+            Each of them iteratively summarized a set of 
+            mutually exclusive categories that can be used to depict elements in a timeline infographic.
+            Gathering the reviews resulted in six categories:
+
+            <table id="categories">
+                <thead>
+                    <tr>
+                        <th>Category</th>
+                        <th>Explaination</th>
+                        <th>Label type</th>
+                        <th>Occurrence</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+
+        </section>
+        <hr />
+        <section id="architecture" class="architecture">
+            <h2>Architecture</h2>
+            <figure style="text-align: center;
+            width: 60%;
+            margin: 0 auto 20px auto;">
+                <img src="figs/41_architecture.png" alt='missing' />
+                <!-- <figcaption>The complete architecture of our model that can parse both global and local information simultaneously.</figcaption> -->
+            </figure>
+            The above figure presents an overview of the complete architecture of our model that can parse both global and local information simultaneously. 
+            We further present the details of <a href="#archit_resnext" style="color:#5B9BD5;"><strong>ResNeXt-FPN</strong></a>, 
+            <a href="#archit_class" style="color:#5B9BD5;"><strong>Class Head</strong></a>, 
+            <a href="#archit_rpn" style="color:#70AD47;"><strong>RPN</strong></a>,
+            <a href="#archit_box" style="color:#70AD47;"><strong>Box Head</strong></a>, and 
+            <a href="#archit_mask" style="color:#70AD47;"><strong>Mask Head</strong></a>, respectively.
+
+            <h4 id="archit_resnext">1. ResNeXt-FPN</h4>
+            <a data-fancybox="gallery" href="figs/resnext_fpn.png">
+                <img style="width: 85%;
+                margin-left: auto;
+                margin-right: -13%; display: block;" src="figs/resnext_fpn.png" alt='missing' />
+                </a>
+
+            <h4 id="archit_class">2. Class Head</h4>
+            <h4 id="archit_rpn">3. RPN</h4>
+            <h4 id="archit_box">4. Box Head</h4>
+            <h4 id="archit_mask">5. Mask Head</h4>
+        </section>
+        <hr />
+        <section id="loss" class="loss">
+            <h2>Loss Functions</h2>
+        </section>
+        <hr />
+        <section id="paper" class="paper">
+            <h2>Paper</h2>
+            <div class="gallary"></div>
+        </section>
+        <hr />
+        <section id="examples" class="examples">
+            <h2>Examples</h2>
+            <div class="gallary"></div>
+        </section>
+    </div>
+
+    <script>
+        function insertExampleImage() {
+            const section = document.querySelector('#examples > .gallary')
+            for(let i = 1; i < 13; ++i) {
+                // section.insertAdjacentHTML('beforeend', `
+                //     <div class="pair item">
+                //         <figure>
+                //             <img src="figs/examples/${i}_u.png" alt='missing' />
+                //             <figcaption>Before DL GrabCut in RGB</figcaption>
+                //         </figure>
+                //         <figure>
+                //             <img src="figs/examples/${i}_d.png" alt='missing' />
+                //             <figcaption>After DL GrabCut in GrayScale</figcaption>
+                //         </figure>
+                //     </div>
+                // `)
+                section.insertAdjacentHTML('beforeend', `
+                <div class="item">
+                        
+                    <a data-fancybox="gallery" href="figs/examples/${i}_u.png">
+                    <img src="figs/examples/${i}_u_tn.jpg" alt='missing' /> </a>
+                </div>
+                <div class="item">
+                        <a data-fancybox="gallery" href="figs/examples/${i}_d.png">
+                    <img src="figs/examples/${i}_d_tn.jpg" alt='missing' />
+                    </a>
+                </div>
+                `)
+            }
+        }
+
+        function insertCategoryTable() {
+            const target = document.querySelector('#categories > tbody')
+            const tableData = [
+                ['<img style="width:15px;" src="https://placehold.it/15/FFC000/000000?text=+" /> Event mark', 'A graphical mark that represents an event. The mark does not relate to the content of the event it represents.', 'BBox + Mask', '1'],
+                ['<img style="width:15px;" src="https://placehold.it/15/34495E/000000?text=+" /> Event text', 'A block of text that depicts and only depicts the occured time of an event.', 'BBox', '0 ~ 1'],
+                ['<img style="width:15px;" src="https://placehold.it/15/5B9BD5/000000?text=+" /> Annotation mark', 'A graphical mark that annotates an event. The mark does not relate to the content of the event it annotates.', 'BBox + Mask', '0 ~ n'],
+                ['<img style="width:15px;" src="https://placehold.it/15/AF7AC4/000000?text=+" /> Annotation text', 'A block of text that depicts the content of an event. The occured time of the event can be included.', 'BBox', '0 ~ n'],
+                ['<img style="width:15px;" src="https://placehold.it/15/FC6868/000000?text=+" /> Annotation icon', 'An graphical or natural image that annotates an event.', 'BBox', '0 ~ n'],
+                ['<img style="width:15px;" src="https://placehold.it/15/1ABC9C/000000?text=+" /> Main body', 'A graphical marks that represents the time.', 'BBox + Mask', '0 ~ n'],
+            ]
+            for(const line of tableData){
+                target.insertAdjacentHTML('beforeend', `<tr>${line.map(d => `<td>${d}</th>`).join('') }</td>`)
+            }
+        }
+
+        function insertPaperPreview() {
+            const target = document.querySelector('#paper > .gallary')
+            for(let i = 1; i < 11; ++i) {
+                target.insertAdjacentHTML('beforeend', `<a href="./eg7.pdf" class="item"><img src="figs/paper/${i}.jpg"/></a>`)
+            }
+        }
+
+        // insert categorytable
+        insertCategoryTable()
+
+        // insert examples
+        insertExampleImage()
+
+        // insert paper
+        insertPaperPreview()
+    </script>
+</body>
+
+</html>
