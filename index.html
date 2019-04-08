@@ -371,7 +371,7 @@
                 <li>\(\mathcal{L}_{{Image}_{type}}\)</li>
                 <p>
                     The \(\mathcal{L}_{{Image}_{type}}\), defined on the entire image,
-                    is computed using the output on timeline type from <a href="#archit_class" style="color:#5B9BD5;"><strong>Class Head</strong></a>. 
+                    is computed using the output on the timeline type from <a href="#archit_class" style="color:#5B9BD5;"><strong>Class Head</strong></a>. 
                     The output is a discrete probability distribution \(p = (p_1, ..., p_{10})\) over 10 timeline types computed by a softmax function.
                     The timeline type classification loss is a log loss for the true type \(u: \mathcal{L}_{{Image}_{type}}(p, u) = -\log{p}_{u}\).
                 </p>
@@ -379,7 +379,7 @@
                 <li>\(\mathcal{L}_{{Image}_{orientation}}\)</li>
                 <p>
                         The \(\mathcal{L}_{{Image}_{orientation}}\), defined on the entire image,
-                        is computed using the output on timeline orientation from <a href="#archit_class" style="color:#5B9BD5;"><strong>Class Head</strong></a>. 
+                        is computed using the output on the timeline orientation from <a href="#archit_class" style="color:#5B9BD5;"><strong>Class Head</strong></a>. 
                         The output is a discrete probability distribution \(p = (p_1, p_2, p_3)\) over 3 timeline orientations computed by a softmax function.
                         The timeline orientation classification loss is a log loss for the true orientation \(u: \mathcal{L}_{{Image}_{orientation}}(p, u) = -\log{p}_{u}\).
                     </p>
@@ -387,7 +387,10 @@
                 <li>\(\mathcal{L}_{{RoI}_{objectness}}\)</li>
                 <p>
                     The \(\mathcal{L}_{{RoI}_{objectness}}\), defined on each RoI,
-                    is computed using the output of <a href="#archit_rpn" style="color:#70AD47;"><strong>RPN</strong></a>.
+                    is computed using the output on the objectness from <a href="#archit_rpn" style="color:#70AD47;"><strong>RPN</strong></a>.
+                    For each RoI, the <a href="#archit_rpn" style="color:#70AD47;"><strong>RPN</strong></a> uses a softmax function to compute a
+                    binary probability distribution \(p = (p_0, p_1)\) to predict whether a RoI contains objects or not (<em>i.e.</em>, foreground or background).
+                    The objectness classification loss is a log loss for the foreground: \(\mathcal{L}_{{RoI}_{objectness}} = -\log{p}_{1}\).
                 </p>
 
                 <li>\(\mathcal{L}_{{RoI}_{bbox}}\)</li>
@@ -399,7 +402,7 @@
                 <li>\(\mathcal{L}_{{DT}_{type}}\)</li>
                 <p>
                     The \(\mathcal{L}_{{DT}_{type}}\), defined on each detection (<em>i.e.</em>, DT),
-                    is computed using the output of <a href="#archit_box" style="color:#70AD47;"><strong>Box Head</strong></a>.
+                    is computed using the output on the element category from <a href="#archit_box" style="color:#70AD47;"><strong>Box Head</strong></a>.
                     For each DT, the <a href="#archit_box" style="color:#70AD47;"><strong>Box Head</strong></a> uses a softmax function to compute a
                     discrete probability distribution \(p = (p_1, p_2, ..., p_7)\) over six pre-defined element categories and a ``catch all'' background.
                     The element category classification loss is a log loss for the true category \(u: \mathcal{L}_{{DT}_{type}}(p, u) = -\log{p}_{u}\).
@@ -582,12 +585,12 @@ SOLVER:
         function insertCategoryTable() {
             const target = document.querySelector('#categories > tbody')
             const tableData = [
-                ['<img style="width:15px;" src="https://placehold.it/15/FFC000/000000?text=+" /> Event mark', 'A graphical mark that represents an event. The mark does not relate to the content of the event it represents.', 'BBox + Mask', '1'],
-                ['<img style="width:15px;" src="https://placehold.it/15/34495E/000000?text=+" /> Event text', 'A block of text that depicts and only depicts the occured time of an event.', 'BBox', '0 ~ 1'],
-                ['<img style="width:15px;" src="https://placehold.it/15/5B9BD5/000000?text=+" /> Annotation mark', 'A graphical mark that annotates an event. The mark does not relate to the content of the event it annotates.', 'BBox + Mask', '0 ~ n'],
-                ['<img style="width:15px;" src="https://placehold.it/15/AF7AC4/000000?text=+" /> Annotation text', 'A block of text that depicts the content of an event. The occured time of the event can be included.', 'BBox', '0 ~ n'],
-                ['<img style="width:15px;" src="https://placehold.it/15/FC6868/000000?text=+" /> Annotation icon', 'A graphical or natural image that annotates an event.', 'BBox', '0 ~ n'],
-                ['<img style="width:15px;" src="https://placehold.it/15/1ABC9C/000000?text=+" /> Main body', 'A graphical marks that represents the time.', 'BBox + Mask', '0 ~ n'],
+                ['<img style="width:15px;" src="https://placehold.it/15/FFC000/000000?text=+" /> Event mark', 'A graphical mark that represents an event. The mark does not relate to the content of the event it represents.', 'BBox + Mask', '1 / event'],
+                ['<img style="width:15px;" src="https://placehold.it/15/34495E/000000?text=+" /> Event text', 'A block of text that depicts and only depicts the occured time of an event.', 'BBox', '0 ~ 1 / event'],
+                ['<img style="width:15px;" src="https://placehold.it/15/5B9BD5/000000?text=+" /> Annotation mark', 'A graphical mark that annotates an event. The mark does not relate to the content of the event it annotates.', 'BBox + Mask', '0 ~ n / event'],
+                ['<img style="width:15px;" src="https://placehold.it/15/AF7AC4/000000?text=+" /> Annotation text', 'A block of text that depicts the content of an event. The occured time of the event can be included.', 'BBox', '0 ~ n / event'],
+                ['<img style="width:15px;" src="https://placehold.it/15/FC6868/000000?text=+" /> Annotation icon', 'A graphical or natural image that annotates an event.', 'BBox', '0 ~ n / event'],
+                ['<img style="width:15px;" src="https://placehold.it/15/1ABC9C/000000?text=+" /> Main body', 'A graphical marks that represents the time.', 'BBox + Mask', '0 ~ n / image'],
             ]
             for(const line of tableData){
                 target.insertAdjacentHTML('beforeend', `<tr>${line.map(d => `<td>${d}</th>`).join('') }</td>`)
