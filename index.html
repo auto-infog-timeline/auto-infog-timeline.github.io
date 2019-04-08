@@ -136,8 +136,7 @@
         table {
             font-family: arial, sans-serif;
             border-collapse: collapse;
-            width: 100%;
-            margin: 8px;
+            margin: 16px auto;
         }
 
         td, th {
@@ -264,10 +263,10 @@
             </p>
 
 
-            <table id="categories">
+            <table id="tb_categories" style="width:90%;">
                 <thead>
                     <tr>
-                        <th>Category</th>
+                        <th style="width:157px;" >Category</th>
                         <th>Explaination</th>
                         <th>Label type</th>
                         <th>Occurrence</th>
@@ -344,7 +343,7 @@
                 \end{equation}
             </p>
 
-            <table id="losses">
+            <table id="tb_losses" style="width:50%;">
                     <thead>
                         <tr>
                             <th></th>
@@ -577,7 +576,7 @@ SOLVER:
         }
 
         function insertCategoryTable() {
-            const target = document.querySelector('#categories > tbody')
+            const target = document.querySelector('#tb_categories > tbody')
             const tableData = [
                 ['<img style="width:15px;" src="https://placehold.it/15/FFC000/000000?text=+" /> Event mark', 'A graphical mark that represents an event. The mark does not relate to the content of the event it represents.', 'BBox + Mask', '1 / event'],
                 ['<img style="width:15px;" src="https://placehold.it/15/34495E/000000?text=+" /> Event text', 'A block of text that depicts and only depicts the occured time of an event.', 'BBox', '0 ~ 1 / event'],
@@ -592,7 +591,7 @@ SOLVER:
         }
 
         function insertLossesTable() {
-            const target = document.querySelector('#training > #losses > tbody')
+            const target = document.querySelector('#tb_losses > tbody')
             const data = [
             [String.raw`\(\mathcal{L}_{{Image}_{type}}\)`,'Image', 'Classification', 'Cross-Entropy',  0.15],
                 [String.raw`\(\mathcal{L}_{{Image}_{orientation}}\)`,'Image', 'Classification', 'Cross-Entropy',  0.15],
