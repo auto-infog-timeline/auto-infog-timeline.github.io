@@ -181,8 +181,16 @@
             font-size: 0.8em;
         }
 
-        li + p {
+        li {
+            margin-top: 8px;
+            margin-bottom: 8px;
+            padding: 8px;
+            border: 1px solid #dddddd;
+            border-radius: 5px;
+        }
+        li p {
             margin-top: 0;
+            margin-bottom: 0;
         }
 
     </style>
@@ -357,64 +365,110 @@
                 </table>
 
             <p>The summary of these losses is presented in the above table.
+                The hyper-parameters \(\lambda\) control the balance between these seven task losses. 
+                We note that the losses defined on the entire image (<em>i.e.</em>, \(\mathcal{L}_{{Image}_{type}}\) and \(\mathcal{L}_{{Image}_{orientation}}\)) 
+                are not on the same scale with other losses (which are defined on the local regions of the image). 
+                Therefore, we empirically set a smaller \(\lambda\) to them (<em>i.e.</em>, 0.15) and follow previous works <a href="#ref_1">[1]</a><a href="#ref_2">[2]</a><a href="#ref_3">[3]</a>    to keep other losses as 1.
                 The detail computation of each loss is described as follows:
             </p>
 
             <ul>
-                <li>\(\mathcal{L}_{{Image}_{type}}\)</li>
-                <p>
-                    The \(\mathcal{L}_{{Image}_{type}}\), defined on the entire image,
-                    is computed using the output on the timeline type from <a href="#archit_class" style="color:#5B9BD5;"><strong>Class Head</strong></a>. 
-                    The output is a discrete probability distribution \(p = (p_1, ..., p_{10})\) over 10 timeline types computed by a softmax function.
-                    The timeline type classification loss is a log loss for the true type \(u: \mathcal{L}_{{Image}_{type}}(p, u) = -\log{p}_{u}\).
-                </p>
+                <li>\(\mathcal{L}_{{Image}_{type}}\)
+                    <p>
+                        The \(\mathcal{L}_{{Image}_{type}}\), defined on the entire image,
+                        is computed using the output on the timeline type from <a href="#archit_class" style="color:#5B9BD5;"><strong>Class Head</strong></a>. 
+                        The output is a discrete probability distribution \(p = (p_1, ..., p_{10})\) over 10 timeline types computed by a softmax function.
+                        The timeline type classification loss is a log loss for the true type \(u: \mathcal{L}_{{Image}_{type}}(p, u) = -\log{p}_{u}\).
+                    </p>
+                </li>
 
-                <li>\(\mathcal{L}_{{Image}_{orientation}}\)</li>
-                <p>
+
+                <li>\(\mathcal{L}_{{Image}_{orientation}}\)
+                    <p>
                         The \(\mathcal{L}_{{Image}_{orientation}}\), defined on the entire image,
                         is computed using the output on the timeline orientation from <a href="#archit_class" style="color:#5B9BD5;"><strong>Class Head</strong></a>. 
                         The output is a discrete probability distribution \(p = (p_1, p_2, p_3)\) over 3 timeline orientations computed by a softmax function.
                         The timeline orientation classification loss is a log loss for the true orientation \(u: \mathcal{L}_{{Image}_{orientation}}(p, u) = -\log{p}_{u}\).
                     </p>
-
-                <li>\(\mathcal{L}_{{RoI}_{objectness}}\)</li>
-                <p>
-                    The \(\mathcal{L}_{{RoI}_{objectness}}\), defined on each RoI,
-                    is computed using the output on the objectness from <a href="#archit_rpn" style="color:#70AD47;"><strong>RPN</strong></a>.
-                    For each RoI, the <a href="#archit_rpn" style="color:#70AD47;"><strong>RPN</strong></a> uses a softmax function to compute a
-                    binary probability distribution \(p = (p_0, p_1)\) to predict whether a RoI contains objects or not (<em>i.e.</em>, foreground or background).
-                    The objectness classification loss is a log loss for the foreground: \(\mathcal{L}_{{RoI}_{objectness}} = -\log{p}_{1}\).
-                </p>
-
-                <li>\(\mathcal{L}_{{RoI}_{bbox}}\)</li>
-                <p>
-                    The \(\mathcal{L}_{{RoI}_{bbox}}\), defined on each RoI,
-                    is computed using the output of <a href="#archit_rpn" style="color:#70AD47;"><strong>RPN</strong></a>.
-                </p> 
-
-                <li>\(\mathcal{L}_{{DT}_{type}}\)</li>
-                <p>
-                    The \(\mathcal{L}_{{DT}_{type}}\), defined on each detection (<em>i.e.</em>, DT),
-                    is computed using the output on the element category from <a href="#archit_box" style="color:#70AD47;"><strong>Box Head</strong></a>.
-                    For each DT, the <a href="#archit_box" style="color:#70AD47;"><strong>Box Head</strong></a> uses a softmax function to compute a
-                    discrete probability distribution \(p = (p_1, p_2, ..., p_7)\) over six pre-defined element categories and a ``catch all'' background.
-                    The element category classification loss is a log loss for the true category \(u: \mathcal{L}_{{DT}_{type}}(p, u) = -\log{p}_{u}\).
-                </p>
-
-                <li>\(\mathcal{L}_{{DT}_{bbox}}\)</li>
-                <p>
-                    The \(\mathcal{L}_{{DT}_{bbox}}\), defined on each DT,
-                    is computed using the output of <a href="#archit_box" style="color:#70AD47;"><strong>Box Head</strong></a>.
-                </p>
-
-                <li>\(\mathcal{L}_{{DT}_{mask}}\)</li>
-                <p>
-                    The \(\mathcal{L}_{{DT}_{mask}}\), defined on each DT,
-                    is computed using the output of <a href="#archit_mask" style="color:#70AD47;"><strong>Mask Head</strong></a>.
-                </p>
+                </li>
 
 
+                <li>\(\mathcal{L}_{{RoI}_{objectness}}\)
+                    <p>
+                        The \(\mathcal{L}_{{RoI}_{objectness}}\), defined on each RoI,
+                        is computed using the output on the objectness from <a href="#archit_rpn" style="color:#70AD47;"><strong>RPN</strong></a>.
+                        For each RoI, <a href="#archit_rpn" style="color:#70AD47;"><strong>RPN</strong></a> uses a softmax function to compute a
+                        probability \(p\) to predict whether the RoI contains objects or not (<em>i.e.</em>, foreground <em>vs.</em> background).
+                        The ground truth \(p^*\) is 1 if a RoI is foreground, and is 0 if it is background.
+                        The objectness classification loss is a log loss over two classes: \(\mathcal{L}_{{RoI}_{objectness}}(p, p^*) = - p^* \log p - (1 - p^*) \log (1 - p)\).
+                        We refer the reader to <a href="#ref_2">[2]</a> for more details.
+                    </p>
+                </li>
+
+
+                <li>\(\mathcal{L}_{{RoI}_{bbox}}\)
+                    <p>
+                        The \(\mathcal{L}_{{RoI}_{bbox}}\), defined on each RoI,
+                        is computed using the output on the bbox from <a href="#archit_rpn" style="color:#70AD47;"><strong>RPN</strong></a>.
+                        For each RoI, <a href="#archit_rpn" style="color:#70AD47;"><strong>RPN</strong></a> outputs bbox correction \(t = (t_x, t_y, t_w, t_h)\)
+                        of the anchor associated with the RoI. The regression loss is computed using Smooth \(L_1\) on the prediction \(t\) and ground truth \(t^* \):
+                        \begin{equation}
+                        \mathcal{L}_{{RoI}_{bbox}}(t, t^*) = p^* L_1^\text{smooth}(t - t^*),
+                        \end{equation}
+                        where \( L_1^\text{smooth}(x) = \begin{cases}0.5 x^2   & \text{if} \vert x \vert < 1 \\ \vert x \vert - 0.5 & \text{otherwise} \end{cases}\),
+                        and the term \(p^*\) indicates that the loss is activated only for foreground RoI (\(p^* = 1\)) and is disabled otherwise (\(p^* = 0\)). 
+                        We refer the reader to <a href="#ref_2">[2]</a> for more details.
+                    </p> 
+                </li>
+
+
+                <li>\(\mathcal{L}_{{DT}_{type}}\)
+                    <p>
+                        The \(\mathcal{L}_{{DT}_{type}}\), defined on each detection (<em>i.e.</em>, DT),
+                        is computed using the output on the element category from <a href="#archit_box" style="color:#70AD47;"><strong>Box Head</strong></a>.
+                        For each DT, <a href="#archit_box" style="color:#70AD47;"><strong>Box Head</strong></a> uses a softmax function to compute a
+                        discrete probability distribution \(p = (p_0, p_1, ..., p_6)\) over six pre-defined element categories and a "catch all" background.
+                        The element category classification loss is a log loss for the true category \(u: \mathcal{L}_{{DT}_{type}}(p, u) = -\log{p}_{u}\).
+                    </p>
+                </li>
+
+
+                <li>\(\mathcal{L}_{{DT}_{bbox}}\)
+                    <p>
+                        The \(\mathcal{L}_{{DT}_{bbox}}\), defined on each DT,
+                        is computed using the output on the element bbox from <a href="#archit_box" style="color:#70AD47;"><strong>Box Head</strong></a>.
+                        For each DT,
+                        <a href="#archit_box" style="color:#70AD47;"><strong>Box Head</strong></a> outputs 6 bbox regression corrections, \(t^k = (t^k_x, t^k_y, t^k_w, t^k_h)\) indexed by \(k\), 
+                        one for each of the 6 categories.
+                        We use the parameterization for \(t^k\) given in <a href="#ref_1">[1]</a>,
+                        in which \(t^k\) specifies a
+                        scale-invariant translation and log-space height/width shift relative to a region proposal (RoI).
+                        Similar to \(\mathcal{L}_{{RoI}_{bbox}}\), the regression loss \(\mathcal{L}_{{DT}_{bbox}}\)
+                        is also computed using Smooth \(L_1\): \(\mathcal{L}_{{RoI}_{bbox}}(t^u, t^*) = [u > 0] L_1^\text{smooth}(t^u - t^*) \),
+                        where \(t^u\) is the predicted bbox correction of the true category \(u\) and \(t^*\) is the ground truth.
+                        The Iverson bracket indicator function
+                        \([u > 0]\) evaluates to 1 when \(u > 0\) and 0 otherwise,
+                        which means the loss is only activated on the foreground predictions (\(p_1\) to \(p_6\)), since the "catch all" background class is labeled \(u = 0\) by convention.
+                        We refer the reader to <a href="#ref_1">[1]</a> for more details.
+                    </p>
+                </li>
+
+
+                <li>\(\mathcal{L}_{{DT}_{mask}}\)
+                    <p>
+                        The \(\mathcal{L}_{{DT}_{mask}}\), defined on each DT,
+                        is computed using the output of <a href="#archit_mask" style="color:#70AD47;"><strong>Mask Head</strong></a>.
+                        For each DT, <a href="#archit_mask" style="color:#70AD47;"><strong>Mask Head</strong></a> outputs 6 binary masks of resolution \(m \times m \) (defined as a hyper parameter), 
+                        one for each of the 6 categories. \(\mathcal{L}_{{DT}_{mask}}\) is defined as the average binary cross-entropy loss over all pixels of a mask.
+                        Besides, for an DT associated with ground true category \(u\), the loss is only defined in the \(u\)-th mask (other mask outputs do not contribute to the loss):
+                        \( \mathcal{L}_{{DT}_{mask}} = - [u > 0] \frac{1}{m^2} \sum_{1 \leq i, j \leq m} \big[ y^*_{ij} \log y^u_{ij} + (1-y^*_{ij}) \log (1- y^u_{ij}) \big] \),
+                        where \(y^*_{ij}\) is the label of a pixel \((i, j)\) in the true mask 
+                        and \(y^u_{ij}\) is the predicted label of the same pixel for the true category \(u\); the term \([u > 0]\) works in the same manner as in \(\mathcal{L}_{{DT}_{bbox}}\).
+                        We refer the reader to <a href="#ref_2">[2]</a> for more details.
+                    </p>
+                </li>
             </ul>
+
             <h4 id="train_hyper">2. Hyper parameters</h4>
             <pre>
 <code class="yaml">MODEL:
@@ -541,6 +595,15 @@ SOLVER:
         <section id="examples" class="examples">
             <h2>Examples</h2>
             <div class="gallary"></div>
+        </section>
+
+        <hr />
+        <section id="references" class="references">
+            <h2 style="text-align:left;">Reference</h2>
+            <p id="ref_1">[1] Ross Girshick. <a href="https://arxiv.org/abs/1504.08083">“Fast R-CNN.”</a> In Proc. IEEE ICCV. 2015.</p>
+            <p id="ref_2">[2] Shaoqing Ren, Kaiming He, Ross Girshick, and Jian Sun. <a href="https://arxiv.org/abs/1506.01497">“Faster R-CNN: Towards Real-time Object Detection with Region Proposal Networks.”</a> In Proc. NIPS. 2015.</p>
+            <p id="ref_3">[3] Kaiming He, Georgia Gkioxari, Piotr Dollár, and Ross Girshick. <a href="https://arxiv.org/abs/1703.06870">"Mask R-CNN."</a> In Proc. IEEE ICCV. 2017.</p>
+            
         </section>
     </div>
 
