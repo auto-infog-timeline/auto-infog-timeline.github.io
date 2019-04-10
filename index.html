@@ -20,6 +20,10 @@
             text-align: justify;
         }
 
+        cite {
+            font-style: normal;
+        }
+
         body {
             box-sizing: border-box;
             display: flex;
@@ -315,11 +319,46 @@
             <a data-fancybox="gallery" href="figs/archit/resnext_fpn.jpg">
                 <img style="width: 90%; margin-left: 20%" src="figs/archit/resnext_fpn.jpg" alt='missing' />
                 </a>
+            <p>
+                The figure above shows the configurations of the ResNeXt-FPN, which is used to extract multi-scale image features, in our model.
+                ResNeXt <cite>ref_resnext</cite> achieves a state-of-the-art performance in many computer vision tasks, 
+                we use ResNeXt to extract the features of a timeline infographic.
+                It takes a 3-channel image (<em>i.e.</em>, RGB) as input
+                and uses one stem block and four groups of bottlenet block to extract features.
+                The four groups of bottlenet block output 
+                a feature hierarchy with a pyramidal shape 
+                that consists of feature maps with 256, 512, 1024, 2048 channels, respectively.        
+            </p>
+
+            <p>
+                We then pass the feature maps into Feature Pyramid Network <cite>ref_fpn</cite> (FPN).            
+                FPN is a top-down architecture and can build semantically strong feature maps at multiple scales using the feature maps from ResNeXt. 
+                FPN makes our model scale-invariant and able to handle images of vastly different resolution.
+                It outputs four feature maps with 256\(d\) (<em>i.e.</em>, 256 channels).
+            </p>
+
+            <p>
+                Please note that the input image can be any resolution (<em>i.e.</em>, \(width \times height \)).
+                Thus, in the figures we only annotate the input/output with resolutions in parentheses for thoes require fixed size resolutions. 
+            </p>
 
             <h4 id="archit_class">2. Class Head</h4>
             <a data-fancybox="gallery" href="figs/archit/class_head.jpg">
                 <img style="width: 40%; margin-left: 15%;" src="figs/archit/class_head.jpg" alt='missing' />
                 </a>
+            <p>
+                We use a class head with two sibiling fully connected (FC) layers to classify the type and orientation of a timeline infographic
+                by consuming the feature maps from ResNeXt-FPN.
+                One problem here is which feature map should be used given ResNeXt-FPN outputs four 256\(d\) feature maps.
+                Considering that the task is to classify the entire image,
+                we choose the last feature map that contains the strongest semantics and the largest scale.
+                Another alternative is to use the feature map from ResNeXt (<em>i.e.</em>, the 2048\(d\) one).
+                We used this feature map in our initial architecture to parse the global information.
+                However, after extending our architecture to parse the local extra,
+                we found out that using the \(256d\) features from FPN
+                can stablize the trainning and improve the performance.
+                We regard this as an advantage of consistent gradients from the local and global information for the back propagation.
+            </p>
 
             <h4 id="archit_rpn">3. RPN</h4>
             <a data-fancybox="gallery" href="figs/archit/rpn.jpg">
@@ -368,7 +407,8 @@
                 The hyper-parameters \(\lambda\) control the balance between these seven task losses. 
                 We note that the losses defined on the entire image (<em>i.e.</em>, \(\mathcal{L}_{{Image}_{type}}\) and \(\mathcal{L}_{{Image}_{orientation}}\)) 
                 are not on the same scale with other losses (which are defined on the local regions of the image). 
-                Therefore, we empirically set a smaller \(\lambda\) to them (<em>i.e.</em>, 0.15) and follow previous works <a href="#ref_1">[1]</a><a href="#ref_2">[2]</a><a href="#ref_3">[3]</a>    to keep other losses as 1.
+                Therefore, we empirically set a smaller \(\lambda\) to them (<em>i.e.</em>, 0.15) 
+                and follow previous works <cite>ref_fast_rcnn</cite><cite>ref_rpn</cite><cite>ref_mask_rcnn</cite> to keep other losses as 1.
                 The detail computation of each loss is described as follows:
             </p>
 
@@ -401,7 +441,7 @@
                         probability \(p\) to predict whether the RoI contains objects or not (<em>i.e.</em>, foreground <em>vs.</em> background).
                         The ground truth \(p^*\) is 1 if a RoI is foreground, and is 0 if it is background.
                         The objectness classification loss is a log loss over two classes: \(\mathcal{L}_{{RoI}_{objectness}}(p, p^*) = - p^* \log p - (1 - p^*) \log (1 - p)\).
-                        We refer the reader to <a href="#ref_2">[2]</a> for more details.
+                        We refer the reader to <cite>ref_rpn</cite> for more details.
                     </p>
                 </li>
 
@@ -417,7 +457,7 @@
                         \end{equation}
                         where \( L_1^\text{smooth}(x) = \begin{cases}0.5 x^2   & \text{if} \vert x \vert < 1 \\ \vert x \vert - 0.5 & \text{otherwise} \end{cases}\),
                         and the term \(p^*\) indicates that the loss is activated only for foreground RoI (\(p^* = 1\)) and is disabled otherwise (\(p^* = 0\)). 
-                        We refer the reader to <a href="#ref_2">[2]</a> for more details.
+                        We refer the reader to <cite>ref_rpn</cite> for more details.
                     </p> 
                 </li>
 
@@ -440,7 +480,7 @@
                         For each DT,
                         <a href="#archit_box" style="color:#70AD47;"><strong>Box Head</strong></a> outputs 6 bbox regression corrections, \(t^k = (t^k_x, t^k_y, t^k_w, t^k_h)\) indexed by \(k\), 
                         one for each of the 6 categories.
-                        We use the parameterization for \(t^k\) given in <a href="#ref_1">[1]</a>,
+                        We use the parameterization for \(t^k\) given in <cite>ref_fast_rcnn</cite>,
                         in which \(t^k\) specifies a
                         scale-invariant translation and log-space height/width shift relative to a region proposal (RoI).
                         Similar to \(\mathcal{L}_{{RoI}_{bbox}}\), the regression loss \(\mathcal{L}_{{DT}_{bbox}}\)
@@ -449,7 +489,7 @@
                         The Iverson bracket indicator function
                         \([u > 0]\) evaluates to 1 when \(u > 0\) and 0 otherwise,
                         which means the loss is only activated on the foreground predictions (\(p_1\) to \(p_6\)), since the "catch all" background class is labeled \(u = 0\) by convention.
-                        We refer the reader to <a href="#ref_1">[1]</a> for more details.
+                        We refer the reader to <cite>ref_fast_rcnn</cite> for more details.
                     </p>
                 </li>
 
@@ -464,7 +504,7 @@
                         \( \mathcal{L}_{{DT}_{mask}} = - [u > 0] \frac{1}{m^2} \sum_{1 \leq i, j \leq m} \big[ y^*_{ij} \log y^u_{ij} + (1-y^*_{ij}) \log (1- y^u_{ij}) \big] \),
                         where \(y^*_{ij}\) is the label of a pixel \((i, j)\) in the true mask 
                         and \(y^u_{ij}\) is the predicted label of the same pixel for the true category \(u\); the term \([u > 0]\) works in the same manner as in \(\mathcal{L}_{{DT}_{bbox}}\).
-                        We refer the reader to <a href="#ref_2">[2]</a> for more details.
+                        We refer the reader to <cite>ref_mask_rcnn</cite> for more details.
                     </p>
                 </li>
             </ul>
@@ -600,10 +640,11 @@ SOLVER:
         <hr />
         <section id="references" class="references">
             <h2 style="text-align:left;">Reference</h2>
-            <p id="ref_1">[1] Ross Girshick. <a href="https://arxiv.org/abs/1504.08083">“Fast R-CNN.”</a> In Proc. IEEE ICCV. 2015.</p>
-            <p id="ref_2">[2] Shaoqing Ren, Kaiming He, Ross Girshick, and Jian Sun. <a href="https://arxiv.org/abs/1506.01497">“Faster R-CNN: Towards Real-time Object Detection with Region Proposal Networks.”</a> In Proc. NIPS. 2015.</p>
-            <p id="ref_3">[3] Kaiming He, Georgia Gkioxari, Piotr Dollár, and Ross Girshick. <a href="https://arxiv.org/abs/1703.06870">"Mask R-CNN."</a> In Proc. IEEE ICCV. 2017.</p>
-            
+            <p id="ref_resnext">Saining Xie, Ross Girshick, Piotr Dollár, Zhuowen Tu, Kaiming He. <a href="https://arxiv.org/abs/1611.05431">"Aggregated Residual Transformations for Deep Neural Networks."</a> In Proc. IEEE CVPR. 2017.</p>
+            <p id="ref_fpn">Tsung-Yi Lin, Piotr Dollár, Ross Girshick, Kaiming He, Bharath Hariharan, Serge Belongie. <a href="https://arxiv.org/abs/1612.03144">"Feature Pyramid Networks for Object Detection."</a> In Proc. IEEE CVPR. 2017.</p>
+            <p id="ref_fast_rcnn">Ross Girshick. <a href="https://arxiv.org/abs/1504.08083">“Fast R-CNN.”</a> In Proc. IEEE ICCV. 2015.</p>
+            <p id="ref_rpn">Shaoqing Ren, Kaiming He, Ross Girshick, and Jian Sun. <a href="https://arxiv.org/abs/1506.01497">“Faster R-CNN: Towards Real-time Object Detection with Region Proposal Networks.”</a> In Proc. NIPS. 2015.</p>
+            <p id="ref_mask_rcnn">Kaiming He, Georgia Gkioxari, Piotr Dollár, and Ross Girshick. <a href="https://arxiv.org/abs/1703.06870">"Mask R-CNN."</a> In Proc. IEEE ICCV. 2017.</p>
         </section>
     </div>
 
@@ -676,6 +717,33 @@ SOLVER:
             }
         }
 
+        function convertReference() {
+            const cites = document.querySelectorAll('cite')
+            let id = 1
+            const orderBook = {}
+            cites.forEach(c => {
+                if(!(c.textContent in orderBook)) {
+                    orderBook[c.textContent] = id++
+                }
+            })
+            cites.forEach(c => {
+                const refId = c.textContent
+                c.textContent = ''
+                c.insertAdjacentHTML('beforeend', `<a href="#${refId}">[${orderBook[refId]}]</a>`)
+            })
+
+            // reorder
+            const ps = Array.from(document.querySelectorAll('#references > p'))
+            ps.forEach(p => {
+                p.innerHTML = `[${orderBook[p.id]}] ${p.innerHTML}`
+                p.parentElement.removeChild(p)
+            })
+            const parent = document.querySelector('#references')
+            ps.filter(p => orderBook[p.id])
+                .sort((a, b) => orderBook[a.id] - orderBook[b.id])
+                .forEach(p => parent.appendChild(p))
+        }
+
         // insert categorytable
         insertCategoryTable()
 
@@ -691,7 +759,8 @@ SOLVER:
         // highlight code
         hljs.initHighlightingOnLoad()
 
-        // mathjax
+        // reference
+        convertReference()
 
     </script>
 </body>
