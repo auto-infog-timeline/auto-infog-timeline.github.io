@@ -185,16 +185,35 @@
             font-size: 0.8em;
         }
 
-        li {
-            margin-top: 8px;
-            margin-bottom: 8px;
-            padding: 8px;
-            border: 1px solid #dddddd;
-            border-radius: 5px;
+        .list_losses {
+            width: 90%;
+            margin: auto;
         }
-        li p {
+
+        .list_losses p {
             margin-top: 0;
+            margin-bottom: 1.25rem;
+            /* border: 1px solid #dddddd;
+            border-radius: 5px; */
+            padding: 1.25rem;
+            background-color: #fff;
+            background-clip: border-box;
+            border: 1px solid rgba(0,0,0,.125);
+            border-radius: .25rem;
+        }
+
+        .list_losses > span {
+            display: block;
+            /* border: 1px solid #dddddd;
+            border-radius: 5px;
+            padding-left: 8px; */
+            background: steelblue;
+            color: white;
+
+            padding: .5rem 1.25rem;
             margin-bottom: 0;
+            border-bottom: 1px solid rgba(0,0,0,.125);
+            border-radius: calc(.25rem - 1px) calc(.25rem - 1px) 0 0;
         }
 
     </style>
@@ -214,12 +233,13 @@
         <div class="teaser-content">
             <h1>Towards Automated Infographic Design: <br /> Deep Learning-based Auto-Generation of Extensible Timeline</h1>
             <div class="jump-btn-group">
-                <a href="#abstract" class="jump-btn">Abstract</a>
+                <!-- <a href="#abstract" class="jump-btn">Abstract</a> -->
                 <a href="#labels" class="jump-btn">Labels</a>
                 <a href="#architecture" class="jump-btn">Architecture</a>
                 <a href="#training" class="jump-btn">Training</a>
                 <a href="#paper" class="jump-btn">Paper</a>
                 <a href="#examples" class="jump-btn">Examples</a>
+                <a href="#materials" class="jump-btn">Materials</a>
             </div>
         </div>
     </div>
@@ -325,6 +345,8 @@
                 we use ResNeXt to extract the features of a timeline infographic.
                 It takes a 3-channel image (<em>i.e.</em>, RGB) as input
                 and uses one stem block and four groups of bottlenet block to extract features.
+                The multiplers of bottlenet blocks are for ResNeXt-50. 
+                As for ResNeXt-101, the bottlenet block of the stage \(4\) is repeated \(23\) times rather than \(6\) times in ResNeXt-50.
                 The four groups of bottlenet block output 
                 a feature hierarchy with a pyramidal shape 
                 that consists of feature maps with 256, 512, 1024, 2048 channels, respectively.        
@@ -334,7 +356,7 @@
                 We then pass the feature maps into Feature Pyramid Network <cite>ref_fpn</cite> (FPN).            
                 FPN is a top-down architecture and can build semantically strong feature maps at multiple scales using the feature maps from ResNeXt. 
                 FPN makes our model scale-invariant and able to handle images of vastly different resolution.
-                It outputs four feature maps with 256\(d\) (<em>i.e.</em>, 256 channels).
+                It outputs four feature maps with \(256d\) (<em>i.e.</em>, 256 channels).
             </p>
 
             <p>
@@ -344,15 +366,15 @@
 
             <h4 id="archit_class">2. Class Head</h4>
             <a data-fancybox="gallery" href="figs/archit/class_head.jpg">
-                <img style="width: 40%; margin-left: 15%;" src="figs/archit/class_head.jpg" alt='missing' />
+                <img style="width: 45%; margin-left: 12.5%;" src="figs/archit/class_head.jpg" alt='missing' />
                 </a>
             <p>
-                We use a class head with two sibiling fully connected (FC) layers to classify the type and orientation of a timeline infographic
+                We use Class Head that consists of two sibiling fully connected (FC) layers to classify the type and orientation of a timeline infographic
                 by consuming the feature maps from ResNeXt-FPN.
-                One problem here is which feature map should be used given ResNeXt-FPN outputs four 256\(d\) feature maps.
+                One problem here is which feature map should be used given ResNeXt-FPN outputs four \(256d\) feature maps.
                 Considering that the task is to classify the entire image,
                 we choose the last feature map that contains the strongest semantics and the largest scale.
-                Another alternative is to use the feature map from ResNeXt (<em>i.e.</em>, the 2048\(d\) one).
+                Another alternative is to use the feature map from ResNeXt (<em>i.e.</em>, the \(2048d\) one).
                 We used this feature map in our initial architecture to parse the global information.
                 However, after extending our architecture to parse the local extra,
                 we found out that using the \(256d\) features from FPN
@@ -362,40 +384,65 @@
 
             <h4 id="archit_rpn">3. RPN</h4>
             <a data-fancybox="gallery" href="figs/archit/rpn.jpg">
-                <img style="width: 41%; margin-left: 21%;" src="figs/archit/rpn.jpg" alt='missing' />
+                <img style="width: 70%; margin-left: 14%;" src="figs/archit/rpn.jpg" alt='missing' />
             </a>
             <p>
                 To parse the local information,
                 we first feed the feature maps from the ResNeXt-FPN into a Region Proposal Network <cite>ref_fpn</cite> (RPN) 
-                to localize elements in a timeline image. 
-                RPN is a fully fully convolutional network (FCN) that simultaneously predicts element locations (<em>i.e.</em>, by bbox) 
+                to propose regions that may contain elements in a timeline image.
+                RPN is a fully convolutional network (FCN) that simultaneously predicts element locations (by bbox) 
                 and objectness probability (<em>i.e.</em>, whether there is an object within the bbox) in an image. 
                 It takes the four feature maps from ResNeXt-FPN as inputs
-                and generates anchors (a kind of reference bbox) with various sizes 
+                and generates anchors (a set of reference bboxes) of various sizes 
                 for each feature map (<em>e.g.</em>, \(32^2, 64^2, 128^2, 256^2\) 
                 <!-- for the \(1\text{st}, 2\text{ed}, 3\text{rd}\), and \(4\text{th}\)  -->
                 for the \(1\)st, \(2\)ed, \(3\)rd, and \(4\)th
                 feature map, respectively).
-                For each feature map, RPN generates three anchors with three aspect ratios (<em>i.e.</em>, \(1:2, 1:1, 2:1\))
-                centered at each pixel of the original image.
-                Thus, for each three anchors center at the same pixel,                
-                RPN outputs 3\(d\) vectors to predict their objectness probability
-                and \(12d = 3 \times 4d\) vectors to predict the bbox corrections.
-                Then a region proposal creator will process these outputs 
-                to remove bboxes without objects and crop bboxes exceeding the boundary of the image.
-                The remaining bboxes are then be used to extract regions of interest (RoIs) from the feature maps. 
-                Each RoI is normalized to fixed size using a RoIAlign layer and then passed to two heads, namely, a Box head and a Mask head. 
+                For each grid in each feature map, RPN uses an anchor generator to generate three anchors of three aspect ratios (<em>i.e.</em>, \(1:2, 1:1, 2:1\)).
+                For each three anchors center at the same grid,                
+                RPN outputs a \(3d\) vector to predict their objectness probability
+                and a \(3 \times 4d\) vector to predict the their regression offsets.
+                A region proposal creator will then process these outputs together with anchors
+                to remove bboxes without elements and crop bboxes exceeding the boundary of the image.
+                The remaining bboxes are then be used to extract regions of interest (RoIs) from the feature maps using a RoIAlign layer.
+                Besides, the RoIAlign layer normalize each RoI to fixed sizes 
+                for passing it to two heads (\(7 \times 7\) for Box Head and \(14 \times 14\) for Mask Head).
             </p>
 
             <h4 id="archit_box">4. Box Head</h4>
             <a data-fancybox="gallery" href="figs/archit/box_head.jpg">
-                <img style="width: 40%; margin-left: 16%;" src="figs/archit/box_head.jpg" alt='missing' />
-                </a>
+                <img style="width: 45%; margin-left: 13.5%;" src="figs/archit/box_head.jpg" alt='missing' />
+            </a>
+            <p>
+                The Box Head follows the design in <cite>ref_fast_rcnn</cite>
+                to use two sibling FC layers to classify the category 
+                and regress the bbox of the element within a RoI.
+                It takes a \(256d\) feature of resolution \(7 \times 7 \) from RPN as the input
+                and two FC layers to reduce the feature to \(1024d\).
+                It then uses two sibling FC layers to output: 1) a \(7d\) vector that can be used to compute the category over 6 element categories and 1 "catch all" background,
+                and 2) a \(6 \times 4d\) vector that represents 6 bbox regressions, 
+                each of which is a four value tuple \(t = (t_x, t_y, t_w, t_h)\) for a category.
+                We use the parameterization for \(t\) given in <cite>ref_fast_rcnn</cite>, 
+                in which \(t\)
+                specifies a
+                scale-invariant translation and log-space height/width shift
+                relative to an RoI. 
+            </p>
 
             <h4 id="archit_mask">5. Mask Head</h4>
             <a data-fancybox="gallery" href="figs/archit/mask_head.jpg">
-                <img style="width: 35%; margin-left: 18%;" src="figs/archit/mask_head.jpg" alt='missing' />
-                </a>
+                <img style="width: 40%; margin-left: 16%;" src="figs/archit/mask_head.jpg" alt='missing' />
+            </a>
+            <p>
+                The Mask Head follows the design in <cite>ref_mask_rcnn</cite> 
+                to use an FCN for predicting the pixels of the element within a RoI.
+                Specifically,
+                it takes a \(256d\) feature of resolution \(14 \times 14 \) from RPN as the input
+                and uses 4 Conv2D layers of \(3 \times 3\) kernels, 1 transposed Conv2D layer,
+                and 1 Conv2D of \(1 \times 1\) kernel to output 6 binary masks of resolution \(28 \times 28\), one for each of the 6 categories.
+                The binary masks indicate whether a pixel inside the RoI belongs to the element or not.
+            </p>
+
         </section>
         <hr />
         <section id="training" class="training">
@@ -434,41 +481,35 @@
                 The detail computation of each loss is described as follows:
             </p>
 
-            <ul>
-                <li>\(\mathcal{L}_{{Image}_{type}}\)
-                    <p>
-                        The \(\mathcal{L}_{{Image}_{type}}\), defined on the entire image,
-                        is computed using the output on the timeline type from <a href="#archit_class" style="color:#5B9BD5;"><strong>Class Head</strong></a>. 
-                        The output is a discrete probability distribution \(p = (p_1, ..., p_{10})\) over 10 timeline types computed by a softmax function.
-                        The timeline type classification loss is a log loss for the true type \(u: \mathcal{L}_{{Image}_{type}}(p, u) = -\log{p}_{u}\).
-                    </p>
-                </li>
+            <div class="list_losses">
+                <span>\(\mathcal{L}_{{Image}_{type}}\)</span>
+                <p>
+                    The \(\mathcal{L}_{{Image}_{type}}\), defined on the entire image,
+                    is computed using the output on the timeline type from <a href="#archit_class" style="color:#5B9BD5;"><strong>Class Head</strong></a>. 
+                    The output is a discrete probability distribution \(p = (p_1, ..., p_{10})\) over 10 timeline types computed by a softmax function.
+                    The timeline type classification loss is a log loss for the true type \(u: \mathcal{L}_{{Image}_{type}}(p, u) = -\log{p}_{u}\).
+                </p>
 
+                <span>\(\mathcal{L}_{{Image}_{orientation}}\)</span>
+                <p>
+                    The \(\mathcal{L}_{{Image}_{orientation}}\), defined on the entire image,
+                    is computed using the output on the timeline orientation from <a href="#archit_class" style="color:#5B9BD5;"><strong>Class Head</strong></a>. 
+                    The output is a discrete probability distribution \(p = (p_1, p_2, p_3)\) over 3 timeline orientations computed by a softmax function.
+                    The timeline orientation classification loss is a log loss for the true orientation \(u: \mathcal{L}_{{Image}_{orientation}}(p, u) = -\log{p}_{u}\).
+                </p>
 
-                <li>\(\mathcal{L}_{{Image}_{orientation}}\)
-                    <p>
-                        The \(\mathcal{L}_{{Image}_{orientation}}\), defined on the entire image,
-                        is computed using the output on the timeline orientation from <a href="#archit_class" style="color:#5B9BD5;"><strong>Class Head</strong></a>. 
-                        The output is a discrete probability distribution \(p = (p_1, p_2, p_3)\) over 3 timeline orientations computed by a softmax function.
-                        The timeline orientation classification loss is a log loss for the true orientation \(u: \mathcal{L}_{{Image}_{orientation}}(p, u) = -\log{p}_{u}\).
-                    </p>
-                </li>
+                <span>\(\mathcal{L}_{{RoI}_{objectness}}\)</span>
+                <p>
+                    The \(\mathcal{L}_{{RoI}_{objectness}}\), defined on each RoI,
+                    is computed using the output on the objectness from <a href="#archit_rpn" style="color:#70AD47;"><strong>RPN</strong></a>.
+                    For each RoI, <a href="#archit_rpn" style="color:#70AD47;"><strong>RPN</strong></a> uses a softmax function to compute a
+                    probability \(p\) to predict whether the RoI contains objects or not (<em>i.e.</em>, foreground <em>vs.</em> background).
+                    The ground truth \(p^*\) is 1 if a RoI is foreground, and is 0 if it is background.
+                    The objectness classification loss is a log loss over two classes: \(\mathcal{L}_{{RoI}_{objectness}}(p, p^*) = - p^* \log p - (1 - p^*) \log (1 - p)\).
+                    We refer the reader to <cite>ref_rpn</cite> for more details.
+                </p>
 
-
-                <li>\(\mathcal{L}_{{RoI}_{objectness}}\)
-                    <p>
-                        The \(\mathcal{L}_{{RoI}_{objectness}}\), defined on each RoI,
-                        is computed using the output on the objectness from <a href="#archit_rpn" style="color:#70AD47;"><strong>RPN</strong></a>.
-                        For each RoI, <a href="#archit_rpn" style="color:#70AD47;"><strong>RPN</strong></a> uses a softmax function to compute a
-                        probability \(p\) to predict whether the RoI contains objects or not (<em>i.e.</em>, foreground <em>vs.</em> background).
-                        The ground truth \(p^*\) is 1 if a RoI is foreground, and is 0 if it is background.
-                        The objectness classification loss is a log loss over two classes: \(\mathcal{L}_{{RoI}_{objectness}}(p, p^*) = - p^* \log p - (1 - p^*) \log (1 - p)\).
-                        We refer the reader to <cite>ref_rpn</cite> for more details.
-                    </p>
-                </li>
-
-
-                <li>\(\mathcal{L}_{{RoI}_{bbox}}\)
+                <span>\(\mathcal{L}_{{RoI}_{bbox}}\)</span>
                     <p>
                         The \(\mathcal{L}_{{RoI}_{bbox}}\), defined on each RoI,
                         is computed using the output on the bbox from <a href="#archit_rpn" style="color:#70AD47;"><strong>RPN</strong></a>.
@@ -483,53 +524,47 @@
                     </p> 
                 </li>
 
+                <span>\(\mathcal{L}_{{DT}_{type}}\)</span>
+                <p>
+                    The \(\mathcal{L}_{{DT}_{type}}\), defined on each detection (<em>i.e.</em>, DT),
+                    is computed using the output on the element category from <a href="#archit_box" style="color:#70AD47;"><strong>Box Head</strong></a>.
+                    For each DT, <a href="#archit_box" style="color:#70AD47;"><strong>Box Head</strong></a> uses a softmax function to compute a
+                    discrete probability distribution \(p = (p_0, p_1, ..., p_6)\) over six pre-defined element categories and a "catch all" background.
+                    The element category classification loss is a log loss for the true category \(u: \mathcal{L}_{{DT}_{type}}(p, u) = -\log{p}_{u}\).
+                </p>
 
-                <li>\(\mathcal{L}_{{DT}_{type}}\)
-                    <p>
-                        The \(\mathcal{L}_{{DT}_{type}}\), defined on each detection (<em>i.e.</em>, DT),
-                        is computed using the output on the element category from <a href="#archit_box" style="color:#70AD47;"><strong>Box Head</strong></a>.
-                        For each DT, <a href="#archit_box" style="color:#70AD47;"><strong>Box Head</strong></a> uses a softmax function to compute a
-                        discrete probability distribution \(p = (p_0, p_1, ..., p_6)\) over six pre-defined element categories and a "catch all" background.
-                        The element category classification loss is a log loss for the true category \(u: \mathcal{L}_{{DT}_{type}}(p, u) = -\log{p}_{u}\).
-                    </p>
-                </li>
+                <span>\(\mathcal{L}_{{DT}_{bbox}}\)</span>
+                <p>
+                    The \(\mathcal{L}_{{DT}_{bbox}}\), defined on each DT,
+                    is computed using the output on the element bbox from <a href="#archit_box" style="color:#70AD47;"><strong>Box Head</strong></a>.
+                    For each DT,
+                    <a href="#archit_box" style="color:#70AD47;"><strong>Box Head</strong></a> outputs 6 bbox regression corrections, \(t^k = (t^k_x, t^k_y, t^k_w, t^k_h)\) indexed by \(k\), 
+                    one for each of the 6 categories.
+                    We use the parameterization for \(t^k\) given in <cite>ref_fast_rcnn</cite>,
+                    in which \(t^k\) specifies a
+                    scale-invariant translation and log-space height/width shift relative to a region proposal (RoI).
+                    Similar to \(\mathcal{L}_{{RoI}_{bbox}}\), the regression loss \(\mathcal{L}_{{DT}_{bbox}}\)
+                    is also computed using Smooth \(L_1\): \(\mathcal{L}_{{RoI}_{bbox}}(t^u, t^*) = [u > 0] L_1^\text{smooth}(t^u - t^*) \),
+                    where \(t^u\) is the predicted bbox correction of the true category \(u\) and \(t^*\) is the ground truth.
+                    The Iverson bracket indicator function
+                    \([u > 0]\) evaluates to 1 when \(u > 0\) and 0 otherwise,
+                    which means the loss is only activated on the foreground predictions (\(p_1\) to \(p_6\)), since the "catch all" background class is labeled \(u = 0\) by convention.
+                    We refer the reader to <cite>ref_fast_rcnn</cite> for more details.
+                </p>
 
-
-                <li>\(\mathcal{L}_{{DT}_{bbox}}\)
-                    <p>
-                        The \(\mathcal{L}_{{DT}_{bbox}}\), defined on each DT,
-                        is computed using the output on the element bbox from <a href="#archit_box" style="color:#70AD47;"><strong>Box Head</strong></a>.
-                        For each DT,
-                        <a href="#archit_box" style="color:#70AD47;"><strong>Box Head</strong></a> outputs 6 bbox regression corrections, \(t^k = (t^k_x, t^k_y, t^k_w, t^k_h)\) indexed by \(k\), 
-                        one for each of the 6 categories.
-                        We use the parameterization for \(t^k\) given in <cite>ref_fast_rcnn</cite>,
-                        in which \(t^k\) specifies a
-                        scale-invariant translation and log-space height/width shift relative to a region proposal (RoI).
-                        Similar to \(\mathcal{L}_{{RoI}_{bbox}}\), the regression loss \(\mathcal{L}_{{DT}_{bbox}}\)
-                        is also computed using Smooth \(L_1\): \(\mathcal{L}_{{RoI}_{bbox}}(t^u, t^*) = [u > 0] L_1^\text{smooth}(t^u - t^*) \),
-                        where \(t^u\) is the predicted bbox correction of the true category \(u\) and \(t^*\) is the ground truth.
-                        The Iverson bracket indicator function
-                        \([u > 0]\) evaluates to 1 when \(u > 0\) and 0 otherwise,
-                        which means the loss is only activated on the foreground predictions (\(p_1\) to \(p_6\)), since the "catch all" background class is labeled \(u = 0\) by convention.
-                        We refer the reader to <cite>ref_fast_rcnn</cite> for more details.
-                    </p>
-                </li>
-
-
-                <li>\(\mathcal{L}_{{DT}_{mask}}\)
-                    <p>
-                        The \(\mathcal{L}_{{DT}_{mask}}\), defined on each DT,
-                        is computed using the output of <a href="#archit_mask" style="color:#70AD47;"><strong>Mask Head</strong></a>.
-                        For each DT, <a href="#archit_mask" style="color:#70AD47;"><strong>Mask Head</strong></a> outputs 6 binary masks of resolution \(m \times m \) (defined as a hyper parameter), 
-                        one for each of the 6 categories. \(\mathcal{L}_{{DT}_{mask}}\) is defined as the average binary cross-entropy loss over all pixels of a mask.
-                        Besides, for an DT associated with ground true category \(u\), the loss is only defined in the \(u\)-th mask (other mask outputs do not contribute to the loss):
-                        \( \mathcal{L}_{{DT}_{mask}} = - [u > 0] \frac{1}{m^2} \sum_{1 \leq i, j \leq m} \big[ y^*_{ij} \log y^u_{ij} + (1-y^*_{ij}) \log (1- y^u_{ij}) \big] \),
-                        where \(y^*_{ij}\) is the label of a pixel \((i, j)\) in the true mask 
-                        and \(y^u_{ij}\) is the predicted label of the same pixel for the true category \(u\); the term \([u > 0]\) works in the same manner as in \(\mathcal{L}_{{DT}_{bbox}}\).
-                        We refer the reader to <cite>ref_mask_rcnn</cite> for more details.
-                    </p>
-                </li>
-            </ul>
+                <span>\(\mathcal{L}_{{DT}_{mask}}\)</span>
+                <p>
+                    The \(\mathcal{L}_{{DT}_{mask}}\), defined on each DT,
+                    is computed using the output of <a href="#archit_mask" style="color:#70AD47;"><strong>Mask Head</strong></a>.
+                    For each DT, <a href="#archit_mask" style="color:#70AD47;"><strong>Mask Head</strong></a> outputs 6 binary masks of resolution \(m \times m \) (defined as a hyper parameter), 
+                    one for each of the 6 categories. \(\mathcal{L}_{{DT}_{mask}}\) is defined as the average binary cross-entropy loss over all pixels of a mask.
+                    Besides, for an DT associated with ground true category \(u\), the loss is only defined in the \(u\)-th mask (other mask outputs do not contribute to the loss):
+                    \( \mathcal{L}_{{DT}_{mask}} = - [u > 0] \frac{1}{m^2} \sum_{1 \leq i, j \leq m} \big[ p^*_{ij} \log p^u_{ij} + (1-p^*_{ij}) \log (1- p^u_{ij}) \big] \),
+                    where \(p^*_{ij}\) is the label of a pixel \((i, j)\) in the true mask 
+                    and \(p^u_{ij}\) is the predicted label of the same pixel for the true category \(u\); the term \([u > 0]\) works in the same manner as in \(\mathcal{L}_{{DT}_{bbox}}\).
+                    We refer the reader to <cite>ref_mask_rcnn</cite> for more details.
+                </p>
+            </div>
 
             <h4 id="train_hyper">2. Hyper parameters</h4>
             <pre>
@@ -656,7 +691,30 @@ SOLVER:
         <hr />
         <section id="examples" class="examples">
             <h2>Examples</h2>
-            <div class="gallary"></div>
+
+            <h4>1. Examples outputted from the model and refined by <em>DL GrabCut</em></h4>
+            <div id="examples_good" class="gallary"></div>
+
+            <h4>2. Examples with graphical and natural elements</h4>
+            To be added soon.
+            <div id="examples_hybrid" class="gallary">
+            </div>
+
+            <h4>3. Examples with recurring errors</h4>
+            To be added soon.
+            <div id="examples_error" class="gallary">
+            </div>
+        </section>
+
+        <hr />
+        <section id="materials" class="materials">
+                <h2>Materials</h2>
+                
+            <h4>1. Code</h4>
+            To be added soon.
+
+            <h4>2. Datasets</h4>
+            To be added soon.            
         </section>
 
         <hr />
@@ -672,7 +730,7 @@ SOLVER:
 
     <script>
         function insertExampleImage() {
-            const section = document.querySelector('#examples > .gallary')
+            const section = document.querySelector('#examples > #examples_good')
             for(let i = 1; i < 13; ++i) {
                 // section.insertAdjacentHTML('beforeend', `
                 //     <div class="pair item">
