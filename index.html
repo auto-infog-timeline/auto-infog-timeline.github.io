@@ -363,7 +363,29 @@
             <h4 id="archit_rpn">3. RPN</h4>
             <a data-fancybox="gallery" href="figs/archit/rpn.jpg">
                 <img style="width: 41%; margin-left: 21%;" src="figs/archit/rpn.jpg" alt='missing' />
-                </a>
+            </a>
+            <p>
+                To parse the local information,
+                we first feed the feature maps from the ResNeXt-FPN into a Region Proposal Network <cite>ref_fpn</cite> (RPN) 
+                to localize elements in a timeline image. 
+                RPN is a fully fully convolutional network (FCN) that simultaneously predicts element locations (<em>i.e.</em>, by bbox) 
+                and objectness probability (<em>i.e.</em>, whether there is an object within the bbox) in an image. 
+                It takes the four feature maps from ResNeXt-FPN as inputs
+                and generates anchors (a kind of reference bbox) with various sizes 
+                for each feature map (<em>e.g.</em>, \(32^2, 64^2, 128^2, 256^2\) 
+                <!-- for the \(1\text{st}, 2\text{ed}, 3\text{rd}\), and \(4\text{th}\)  -->
+                for the \(1\)st, \(2\)ed, \(3\)rd, and \(4\)th
+                feature map, respectively).
+                For each feature map, RPN generates three anchors with three aspect ratios (<em>i.e.</em>, \(1:2, 1:1, 2:1\))
+                centered at each pixel of the original image.
+                Thus, for each three anchors center at the same pixel,                
+                RPN outputs 3\(d\) vectors to predict their objectness probability
+                and \(12d = 3 \times 4d\) vectors to predict the bbox corrections.
+                Then a region proposal creator will process these outputs 
+                to remove bboxes without objects and crop bboxes exceeding the boundary of the image.
+                The remaining bboxes are then be used to extract regions of interest (RoIs) from the feature maps. 
+                Each RoI is normalized to fixed size using a RoIAlign layer and then passed to two heads, namely, a Box head and a Mask head. 
+            </p>
 
             <h4 id="archit_box">4. Box Head</h4>
             <a data-fancybox="gallery" href="figs/archit/box_head.jpg">
