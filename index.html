@@ -117,9 +117,9 @@
         .gallary {
             display: flex;
             flex-wrap: wrap;
-            justify-content: space-between;
+            justify-content: space-around;
             align-content: space-between;
-            padding: 8px 8px 0px 8px;
+            /* padding: 8px 8px 0px 8px; */
         }
 
         .paper .gallary:hover {
@@ -134,6 +134,7 @@
             width: 24%;
             position: relative;
             margin-bottom: 8px;
+            background-color: #fff;
         }
 
         .item-content {
@@ -159,6 +160,10 @@
             transform: translateY(-50%);
         }
 
+        .item-1 {
+            width: 96%;
+        }
+
         .item-2 {
             width: 48%;
         }
@@ -171,7 +176,7 @@
             width: 19%;
         }
 
-        .examples .gallary {
+        #examples_good {
             width: 120%;
             margin-left: -10%;
         }
@@ -209,6 +214,7 @@
             margin: auto;
         }
 
+        .card-content,
         .list_losses p {
             margin-top: 0;
             margin-bottom: 1.25rem;
@@ -219,6 +225,14 @@
             border-radius: .25rem;
         }
 
+        .card-content > :first-child {
+            margin-top: 0;
+        }
+        .card-content > :last-child {
+            margin-bottom: 0;
+        }
+
+        .card-title,
         .list_losses>span {
             display: block;
             background: steelblue;
@@ -787,101 +801,135 @@ SOLVER:
             <h2>Examples</h2>
 
             <h4>1. Examples outputted from the model and refined by <em>DL GrabCut</em>.</h4>
-            Please note that the aliasing of some borders of masks is caused by the rendering method we used
-            (<em>i.e.</em>, the <em><a href="//docs.opencv.org/2.4/modules/imgproc/doc/structural_analysis_and_shape_descriptors.html">findCountor</a></em> in openCV.)
+            <p>
+                Please note that the aliasing of some borders of masks is caused by the rendering method we used
+                (<em>i.e.</em>, the <em><a href="//docs.opencv.org/2.4/modules/imgproc/doc/structural_analysis_and_shape_descriptors.html">findCountor</a></em> in openCV.)
+            </p>
             <div id="examples_good" class="gallary"></div>
 
             <h4>2. Supplemental examples</h4>
-
             <p>
-                In an infographic, a common practice is to show objects with photos and annotate them with graphical shapes.
-                Such kind of hybrid components requires a model that considers the characteristics of natural and graphical elements. 
-                Although our datasets do not include natural elements, 
-                we are interested in the performance of our model on timelines contain graphical and natural elements. 
-                Thus, we randomly substitute some graphical marks with photos of animals and then feed them to our model.
+                In this section, we provide extra examples from ablation studies
+                to indicate some properties of the model.
             </p>
-            <div id="examples_hybrid" class="gallary">
-                <div class="item">
-                        <div class="item-content">
-                    <a data-fancybox="gallery" href="figs/examples/cat_1.jpg">
-                        <img src="figs/examples/cat_1_tn.jpg" alt='missing' /> </a>
-                    <span class="legend">a</span></div>
+
+            <span class="card-title">Examples of parsing infographics with natural and graphical elements</span>
+            <div class="card-content">
+                <p>
+                    In an infographic, a common practice is to show objects with photos and annotate them with graphical shapes.
+                    Such kind of hybrid components requires a model that considers the characteristics of natural and graphical elements. 
+                    Although our datasets do not include natural elements, 
+                    we are interested in the performance of our model on timelines contain graphical and natural elements. 
+                    Thus, we randomly substitute some graphical marks with photos of animals and then feed them to our model.
+                </p>
+                <div id="examples_hybrid" class="gallary">
+                    <div class="item item-2">
+                            <div class="item-content">
+                        <a data-fancybox="gallery" href="figs/examples/cat_1.jpg">
+                            <img src="figs/examples/cat_1_tn.jpg" alt='missing' /> </a>
+                        <span class="legend">a</span></div>
+                    </div>
+                    <div class="item item-2">
+                            <div class="item-content">
+                        <a data-fancybox="gallery" href="figs/examples/cat_2.jpg">
+                            <img src="figs/examples/cat_2_tn.jpg" alt='missing' /> </a>
+                        <span class="legend">b</span></div>
+                    </div>
+                    <p>
+                        In the <strong>Fig.a</strong> above, we substitute all annotation icons with animal photos
+                        and randomly add additional animal photos for disruption.
+                        The results show that our model can still correctly classify these animals as annotation icons.
+                        We regard this performance as a benefit of the ImageNet pre-trained network. 
+                    </p>
+        
+                    <p style="margin-top:0;">
+                        In the <strong>Fig.b</strong>, we further substitute all event marks with animal photos
+                        to see whether the model can classify them as event marks.
+                        Interestingly, our model can finish the task perfectly:
+                        although the cats looks identical,
+                        our model classify the cats that randomly distributed in the image as annotation marks,
+                        while the cats on the main body as event marks.
+                    </p>
+
+                    <div class="item item-1">
+                            <div class="item-content">
+                        <a data-fancybox="gallery" href="figs/examples/cat_3.jpg">
+                            <img src="figs/examples/cat_3_tn.jpg" alt='missing' /> </a>
+                        <span class="legend">c</span></div>
+                    </div>
                 </div>
-                <div class="item">
-                        <div class="item-content">
-                    <a data-fancybox="gallery" href="figs/examples/cat_2.jpg">
-                        <img src="figs/examples/cat_2_tn.jpg" alt='missing' /> </a>
-                    <span class="legend">b</span></div>
-                </div>
-                <div class="item item-2">
-                        <div class="item-content">
-                    <a data-fancybox="gallery" href="figs/examples/cat_3.jpg">
-                        <img src="figs/examples/cat_3_tn.jpg" alt='missing' /> </a>
-                    <span class="legend">c</span></div>
-                </div>
+    
+ 
+    
+                <p>
+                    However, this result does not mean that the model can recognize elements based on their localtions and relationships to other elements.
+                    <strong>Figure.c</strong> presents a more general case.
+                    For this infographic, which has a similar representation with a linear timeline,
+                    our model can correctly identify the annotation marks, annotation text, and annotation icons,
+                    but classifies all corncobs in the middle as annotation icons instead of event marks or main bodys.
+                    This example demonstrates that the DL model 
+                    mainly recognizes elements based on their visual appearance,
+                    rather than their localtions and relationships to other elements.
+                    Thus, for the cats on the main body in <strong>Fig.b</strong>,
+                    we conjecture that is the appearances of them together with other elements (<em>e.g.</em>, the main body and annotation marks) around
+                    that help our model to aheive correct classifications.
+                </p>
+    
+                <p>
+                    These examples relate to issues about <strong>networks on images with natural and graphical elements.</strong>
+                    Besides, these examples also involve <strong>translation invariance</strong> <em>vs.</em> <strong>translation variance</strong>
+                    in networks.
+                    Future research is needed to further understand these cases.
+                    We disccus these issues and potential solutions in <strong>Section 7.1</strong> in our paper.
+                </p>
             </div>
-
+        
+            <span class="card-title">Examples of using tricks to improve the detection results</span>
+            <div class="card-content">
             <p>
-                In the <strong>Fig.a</strong> above, we substitute all annotation icons with animal photos
-                and randomly add additional animal photos for disruption.
-                The results show that our model can still correctly classify these animals as annotation icons.
-                We regard this performance as a benefit of the ImageNet pre-trained network. 
+                Given our work is not aimed at high metric values,
+                we did not optimize our model with bells and whistles,
+                such as comprehensive data augmentation, multi-scale train/test, more advanced loss functions, and other techniques. 
+                Outside the scope of this work, we expect that such improvement skills are applicable to our model.
+                Here we present examples to 
+                demonstrate how our model can be improved with such kind of techniques.
             </p>
-
-            <p>
-                In the <strong>Fig.b</strong>, we further substitute all event marks with animal photos
-                to see whether the model can classify them as event marks.
-                Interestingly, our model can finish the task perfectly:
-                although the cats looks identical,
-                our model classify the cats that randomly distributed in the image as annotation marks,
-                while the cats on the main body as event marks.
-            </p>
-
-            <p>
-                However, this result does not mean that the model can recognize elements based on their localtions and relationships to other elements.
-                <strong>Figure.c</strong> presents a more general case.
-                For this infographic, which has a similar representation with a linear timeline,
-                our model can correctly identify the annotation marks, annotation text, and annotation icons,
-                but classifies all corncobs in the middle as annotation icons instead of event marks or main bodys.
-                This example demonstrates that the DL model 
-                mainly recognizes elements based on their visual appearance,
-                rather than their localtions and relationships to other elements.
-                Thus, for the cats on the main body in <strong>Fig.b</strong>,
-                we conjecture that is the appearances of them together with other elements (<em>e.g.</em>, the main body and annotation marks) around
-                that help our model to aheive correct classifications.
-            </p>
-
-            <p>
-                These examples relate to <strong>translation invariance</strong> <em>vs.</em> <strong>translation variance</strong>
-                and networks on <strong>images with hybrid components (natural and graphical elements).</strong>
-                Future research is needed to further understand the generality of these cases.
-                We disccus these issues and potential improvements in <strong>Section 7.1</strong> in our paper.
-            </p>
-
+        
             <div id="examples_scale" class="gallary">
-                <div class="item">
+                <div class="item item-2">
                         <div class="item-content">
                     <a data-fancybox="gallery" href="figs/examples/scale_o.jpg">
                         <img src="figs/examples/scale_o_tn.jpg" alt='missing' /> </a>
                         <span class="legend">a</span></div>
                 </div>
-                <div class="item">       <div class="item-content">
+                <div class="item item-2">       <div class="item-content">
                     <a data-fancybox="gallery" href="figs/examples/scale_u.jpg">
                         <img src="figs/examples/scale_u_tn.jpg" alt='missing' /> </a>
                         <span class="legend">b</span></div>
 
                 </div>
-                <div class="item item-2">       <div class="item-content">
+                <div class="item item-1">       <div class="item-content">
                         <a data-fancybox="gallery" href="figs/examples/scale_d.jpg">
                             <img src="figs/examples/scale_d_tn.jpg" alt='missing' /> </a>
                             <span class="legend">c</span></div>
-    
                     </div>
             </div>
+
             <p>
-                Description to be added: multi-sacle test/train.
+                The <strong>Fig.a</strong> shows a timeline infographic 
+                and <strong>Fig.b</strong> presents the detection resutls of our model.
+                As shown in <strong>Fig.b</strong>,
+                the annotation marks are not covered by the bboxes.
+                Our investigation reveals that this is because the size of the annotation marks are too large with respect to the image size.
+                There are no such kind of unusual large annotation marks in the training set.
+                Thus, the model tends to use a relatively small bbox to cover the annotation marks.
+                In <strong>Fig.c</strong>, we apply a multi-scale testing technique
+                by extending the image (resizing also works) to reduce the relative size of the annotation marks.
+                The model then can detect the marks correctly.
+                Multi-scale training is another method to tackle this kind of cases,
+                which is a data augmentation strategy.
+                Simply put, we can resize the training data to cover annotation marks with diverse sizes.
             </p>
-    
 
             <div id="examples_bw" class="gallary" style="justify-content: space-around;">
                 <div class="item item-2">       <div class="item-content">
@@ -907,9 +955,27 @@ SOLVER:
                 </div>
             </div>
             <p>
-                Description to be added: single/multi-channels test/train.
+                <strong>Figure.a</strong> is a greyscale timeline and <strong>Fig.b</strong> shows the detection results.
+                As shown in the enlarging views in the top of <strong>Fig.b</strong>,
+                some event marks, whose colors are similar to the background color, 
+                are undetected or incorrectly detected as a part of the annotation marks.
+                We discover that the lacking of greyscale training data is the major reason,
+                because in timelines with RGB channels it is unusal to have event marks with colors similar to the background color. 
+                Thus, we add some colors to the undetected event marks (<strong>Fig.c</strong>).
+                The model sucessufully detects these marks as our expected (<strong>Fig.d</strong>).
+                To handle this kind of cases,
+                a data augmentation strategy that converts RGB images to greyscale images 
+                can be applied in training samples.
             </p>
 
+            <p>Both these two representative cases (<em>i.e.</em>, the large size and greyscale examples)
+                can be addressed by data augmentation techniques.
+                Besides the data aspect, 
+                there are other enhancement techniques for networks, 
+                such as OHEM<cite>ref_OHEM</cite>, focal loss<cite>ref_focal_loss</cite>, soft-NMS<cite>ref_soft_nms</cite>, <em>etc.</em>
+                We leave this improvement techniques for future work.
+            </p>
+            </div>
         </section>
 
         <!-- <hr />
@@ -939,6 +1005,15 @@ SOLVER:
                     Region Proposal Networks.”</a> In Proc. NIPS. 2015.</p>
             <p id="ref_mask_rcnn">Kaiming He, Georgia Gkioxari, Piotr Dollár, and Ross Girshick. <a
                     href="https://arxiv.org/abs/1703.06870">"Mask R-CNN."</a> In Proc. IEEE ICCV. 2017.</p>
+            <p id="ref_OHEM">Abhinav Shrivastava, Abhinav Gupta, Ross Girshick. <a href="https://arxiv.org/abs/1604.03540">
+                "Training Region-based Object Detectors with Online Hard Example Mining."
+            </a> In Proc. IEEE CVPR. 2016.</p>
+            <p id="ref_focal_loss">Tsung-Yi Lin, Priya Goyal, Ross Girshick, Kaiming He, Piotr Dollár. <a href="https://arxiv.org/abs/1708.02002">
+            "Focal Loss for Dense Object Detection."</a> In Proc. IEEE ICCV. 2017.</p>
+            <p id="ref_soft_nms">Navaneeth Bodla, Bharat Singh, Rama Chellappa, Larry S. Davis.
+                <a href="https://arxiv.org/abs/1704.04503">"Soft-NMS -- Improving Object Detection With One Line of Code."</a>
+                In Proc. IEEE ICCV. 2017.
+            </p>
         </section>
     </div>
 
