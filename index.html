@@ -114,9 +114,49 @@
             text-align: justify;
         }
 
+        .gallary {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-content: space-between;
+            padding: 8px 8px 0px 8px;
+        }
+
+        .paper .gallary:hover {
+            border: 1px solid #27ae60;
+        }
+        .paper .item-content:hover {
+            /* disable the hover*/
+            border: 1px solid #dddddd;
+        }
+
         .item {
             width: 24%;
             position: relative;
+            margin-bottom: 8px;
+        }
+
+        .item-content {
+            overflow: hidden;
+            width: 100%;
+            height: 100%;
+            border: 1px solid #dddddd;
+            border-radius: 10px;
+        }
+
+        .item-content:hover {
+            border: 1px solid #27ae60;
+            border-radius: 10px;
+        }
+
+        .item-content img {
+            /* max-height: 100%;
+            max-width: 100%;
+            height: auto;
+            width: auto; */
+            position: relative;
+            top: 50%;
+            transform: translateY(-50%);
         }
 
         .item-2 {
@@ -127,29 +167,15 @@
             width: 32%;
         }
 
+        .item-5 {
+            width: 19%;
+        }
+
         .examples .gallary {
             width: 120%;
             margin-left: -10%;
         }
 
-        .examples .item img {
-            /* max-height: 100%;
-            max-width: 100%;
-            height: auto;
-            width: auto; */
-            position: relative;
-            top: 50%;
-            transform: translateY(-50%);
-
-        }
-
-        .examples .gallary .item {
-            /* height: 256px; */
-            /* text-align: center; */
-            border: 1px solid #dddddd;
-            border-radius: 5px;
-            margin-bottom: 8px;
-        }
 
         table {
             font-family: arial, sans-serif;
@@ -166,30 +192,6 @@
 
         tr:nth-child(even) {
             background-color: #dddddd;
-        }
-
-        .gallary {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-between;
-            align-content: space-between;
-            padding: 8px 8px 0px 8px;
-        }
-
-        .gallary:hover {
-            border: 1px solid #27ae60;
-            border-radius: 10px;
-        }
-
-        .paper .gallary .item {
-            width: 19%;
-            margin-bottom: 8px;
-        }
-
-        .paper .gallary img {
-            /* padding: 10px 5px 10px 5px; */
-            border: 1px solid #dddddd;
-            border-radius: 5px;
         }
 
         .training pre {
@@ -210,8 +212,6 @@
         .list_losses p {
             margin-top: 0;
             margin-bottom: 1.25rem;
-            /* border: 1px solid #dddddd;
-            border-radius: 5px; */
             padding: 1.25rem;
             background-color: #fff;
             background-clip: border-box;
@@ -221,9 +221,6 @@
 
         .list_losses>span {
             display: block;
-            /* border: 1px solid #dddddd;
-            border-radius: 5px;
-            padding-left: 8px; */
             background: steelblue;
             color: white;
 
@@ -234,7 +231,7 @@
         }
 
         .legend {
-            font-size: 1rem;
+            font-size: 1.3rem;
             position: absolute;
             text-align: center;
             line-height: 30px;
@@ -249,6 +246,7 @@
             /* border: 2px solid #f7f7f7; */
             bottom: 0;
             transform: translateX(-50%);
+            font-weight: bold;
         }
     </style>
     <script src="//code.jquery.com/jquery-3.3.1.min.js"></script>
@@ -790,47 +788,93 @@ SOLVER:
 
             <h4>1. Examples outputted from the model and refined by <em>DL GrabCut</em>.</h4>
             Please note that the aliasing of some borders of masks is caused by the rendering method we used
-            (<em>i.e.</em>, the <em>findCountor</em> in openCV.)
+            (<em>i.e.</em>, the <em><a href="//docs.opencv.org/2.4/modules/imgproc/doc/structural_analysis_and_shape_descriptors.html">findCountor</a></em> in openCV.)
             <div id="examples_good" class="gallary"></div>
 
             <h4>2. Supplemental examples</h4>
+
+            <p>
+                In an infographic, a common practice is to show objects with photos and annotate them with graphical shapes.
+                Such kind of hybrid components requires a model that considers the characteristics of natural and graphical elements. 
+                Although our datasets do not include natural elements, 
+                we are interested in the performance of our model on timelines contain graphical and natural elements. 
+                Thus, we randomly substitute some graphical marks with photos of animals and then feed them to our model.
+            </p>
             <div id="examples_hybrid" class="gallary">
                 <div class="item">
+                        <div class="item-content">
                     <a data-fancybox="gallery" href="figs/examples/cat_1.jpg">
                         <img src="figs/examples/cat_1_tn.jpg" alt='missing' /> </a>
-                    <span class="legend">a</span>
+                    <span class="legend">a</span></div>
                 </div>
                 <div class="item">
+                        <div class="item-content">
                     <a data-fancybox="gallery" href="figs/examples/cat_2.jpg">
                         <img src="figs/examples/cat_2_tn.jpg" alt='missing' /> </a>
-                    <span class="legend">b</span>
+                    <span class="legend">b</span></div>
                 </div>
                 <div class="item item-2">
+                        <div class="item-content">
                     <a data-fancybox="gallery" href="figs/examples/cat_3.jpg">
                         <img src="figs/examples/cat_3_tn.jpg" alt='missing' /> </a>
-                    <span class="legend">c</span>
+                    <span class="legend">c</span></div>
                 </div>
             </div>
+
             <p>
-                Description to be added: hybrid elements.
+                In the <strong>Fig.a</strong> above, we substitute all annotation icons with animal photos
+                and randomly add additional animal photos for disruption.
+                The results show that our model can still correctly classify these animals as annotation icons.
+                We regard this performance as a benefit of the ImageNet pre-trained network. 
+            </p>
+
+            <p>
+                In the <strong>Fig.b</strong>, we further substitute all event marks with animal photos
+                to see whether the model can classify them as event marks.
+                Interestingly, our model can finish the task perfectly:
+                although the cats looks identical,
+                our model classify the cats that randomly distributed in the image as annotation marks,
+                while the cats on the main body as event marks.
+            </p>
+
+            <p>
+                However, this result does not mean that the model can recognize elements based on their localtions and relationships to other elements.
+                <strong>Figure.c</strong> presents a more general case.
+                For this infographic, which has a similar representation with a linear timeline,
+                our model can correctly identify the annotation marks, annotation text, and annotation icons,
+                but classifies all corncobs in the middle as annotation icons instead of event marks or main bodys.
+                This example demonstrates that the DL model 
+                mainly recognizes elements based on their visual appearance,
+                rather than their localtions and relationships to other elements.
+                Thus, for the cats on the main body in <strong>Fig.b</strong>,
+                we conjecture that is the appearances of them together with other elements (<em>e.g.</em>, the main body and annotation marks) around
+                that help our model to aheive correct classifications.
+            </p>
+
+            <p>
+                These examples relate to <strong>translation invariance</strong> <em>vs.</em> <strong>translation variance</strong>
+                and networks on <strong>images with hybrid components (natural and graphical elements).</strong>
+                Future research is needed to further understand the generality of these cases.
+                We disccus these issues and potential improvements in <strong>Section 7.1</strong> in our paper.
             </p>
 
             <div id="examples_scale" class="gallary">
                 <div class="item">
+                        <div class="item-content">
                     <a data-fancybox="gallery" href="figs/examples/scale_o.jpg">
                         <img src="figs/examples/scale_o_tn.jpg" alt='missing' /> </a>
-                        <span class="legend">a</span>
+                        <span class="legend">a</span></div>
                 </div>
-                <div class="item">
+                <div class="item">       <div class="item-content">
                     <a data-fancybox="gallery" href="figs/examples/scale_u.jpg">
                         <img src="figs/examples/scale_u_tn.jpg" alt='missing' /> </a>
-                        <span class="legend">b</span>
+                        <span class="legend">b</span></div>
 
                 </div>
-                <div class="item item-2">
+                <div class="item item-2">       <div class="item-content">
                         <a data-fancybox="gallery" href="figs/examples/scale_d.jpg">
                             <img src="figs/examples/scale_d_tn.jpg" alt='missing' /> </a>
-                            <span class="legend">c</span>
+                            <span class="legend">c</span></div>
     
                     </div>
             </div>
@@ -840,26 +884,26 @@ SOLVER:
     
 
             <div id="examples_bw" class="gallary" style="justify-content: space-around;">
-                <div class="item item-2">
+                <div class="item item-2">       <div class="item-content">
                     <a data-fancybox="gallery" href="figs/examples/bw_u_o.jpg">
                         <img src="figs/examples/bw_u_o_tn.jpg" alt='missing' /> </a>
-                        <span class="legend">a</span>
+                        <span class="legend">a</span></div>
                 </div>
-                <div class="item item-2">
+                <div class="item item-2">       <div class="item-content">
                     <a data-fancybox="gallery" href="figs/examples/bw_u.jpg">
                         <img src="figs/examples/bw_u_tn.jpg" alt='missing' /> </a>
-                        <span class="legend">b</span>
+                        <span class="legend">b</span></div>
                 </div>
 
-                <div class="item item-2">
+                <div class="item item-2">       <div class="item-content">
                     <a data-fancybox="gallery" href="figs/examples/bw_d_o.jpg">
                         <img src="figs/examples/bw_d_o_tn.jpg" alt='missing' /> </a>
-                        <span class="legend">c</span>
+                        <span class="legend">c</span></div>
                 </div>
-                <div class="item item-2">
+                <div class="item item-2">       <div class="item-content">
                     <a data-fancybox="gallery" href="figs/examples/bw_d.jpg">
                         <img src="figs/examples/bw_d_tn.jpg" alt='missing' /> </a>
-                        <span class="legend">d</span>
+                        <span class="legend">d</span></div>
                 </div>
             </div>
             <p>
@@ -902,28 +946,19 @@ SOLVER:
         function insertExampleImage() {
             const section = document.querySelector('#examples > #examples_good')
             for (let i = 1; i < 13; ++i) {
-                // section.insertAdjacentHTML('beforeend', `
-                //     <div class="pair item">
-                //         <figure>
-                //             <img src="figs/examples/${i}_u.png" alt='missing' />
-                //             <figcaption>Before DL GrabCut in RGB</figcaption>
-                //         </figure>
-                //         <figure>
-                //             <img src="figs/examples/${i}_d.png" alt='missing' />
-                //             <figcaption>After DL GrabCut in GrayScale</figcaption>
-                //         </figure>
-                //     </div>
-                // `)
                 section.insertAdjacentHTML('beforeend', `
                 <div class="item">
-                        
+                    <div class="item-content">
                     <a data-fancybox="gallery" href="figs/examples/${i}_u.png">
                     <img src="figs/examples/${i}_u_tn.jpg" alt='missing' /> </a>
+                    </div>
                 </div>
                 <div class="item">
+                    <div class="item-content">
                         <a data-fancybox="gallery" href="figs/examples/${i}_d.png">
-                    <img src="figs/examples/${i}_d_tn.jpg" alt='missing' />
-                    </a>
+                            <img src="figs/examples/${i}_d_tn.jpg" alt='missing' />
+                        </a>
+                    </div>
                 </div>
                 `)
             }
@@ -963,7 +998,10 @@ SOLVER:
         function insertPaperPreview() {
             const target = document.querySelector('#paper > .gallary')
             for (let i = 1; i < 11; ++i) {
-                target.insertAdjacentHTML('beforeend', `<a href="./eg7.pdf" class="item"><img src="figs/paper/${i}_tn.jpg"/></a>`)
+                target.insertAdjacentHTML('beforeend', `<a href="./eg7.pdf" class="item item-5">
+                    <div class="item-content"><img src="figs/paper/${i}_tn.jpg"/>
+                    </div>
+                    </a>`)
             }
         }
 
