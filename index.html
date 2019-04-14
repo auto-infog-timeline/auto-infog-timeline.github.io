@@ -284,8 +284,8 @@
                 <a href="#labels" class="jump-btn">Labels</a>
                 <a href="#architecture" class="jump-btn">Architecture</a>
                 <a href="#training" class="jump-btn">Training</a>
-                <a href="#paper" class="jump-btn">Paper</a>
                 <a href="#examples" class="jump-btn">Examples</a>
+                <a href="#paper" class="jump-btn">Paper</a>
                 <!-- <a href="#materials" class="jump-btn">Materials</a> -->
             </div>
         </div>
@@ -675,6 +675,8 @@
             </div>
 
             <h4 id="train_hyper">2. Hyper parameters</h4>
+            We implemented two types of CNN backbone for our model, namely, ResNeXt-101 and ResNeXt-50.
+            Below are the hyper parameters we used to train our models with ResNeXt-101 and ResNeXt-50, respectively.
             <pre>
 <code class="yaml">MODEL:
     META_ARCHITECTURE: "GeneralizedRCNN"
@@ -791,17 +793,16 @@ SOLVER:
     CHECKPOINT_PERIOD: 10000</code>
 </pre>
         </section>
-        <hr />
-        <section id="paper" class="paper">
-            <h2>Paper</h2>
-            <div class="gallary"></div>
-        </section>
+
         <hr />
         <section id="examples" class="examples">
             <h2>Examples</h2>
 
             <h4>1. Examples outputted from the model and refined by <em>DL GrabCut</em>.</h4>
             <p>
+                After applying <em>Non-Maximum Merging</em> and <em>Redundancy Recover</em>, 
+                we visualize the final predicted category, bbox, and mask of each element on timelines. 
+                We then apply <em>DL GrabCut</em> and convert the timeline infographics to greyscale images for a clear demonstration.
                 Please note that the aliasing of some borders of masks is caused by the rendering method we used
                 (<em>i.e.</em>, the <em><a href="//docs.opencv.org/2.4/modules/imgproc/doc/structural_analysis_and_shape_descriptors.html">findCountor</a></em> in openCV.)
             </p>
@@ -809,7 +810,7 @@ SOLVER:
 
             <h4>2. Supplemental examples</h4>
             <p>
-                In this section, we provide extra examples from ablation studies
+                In this section, we provide additional examples from ablation studies
                 to indicate some properties of the model.
             </p>
 
@@ -846,8 +847,8 @@ SOLVER:
                         In the <strong>Fig.b</strong>, we further substitute all event marks with animal photos
                         to see whether the model can classify them as event marks.
                         Interestingly, our model can finish the task perfectly:
-                        although the cats looks identical,
-                        our model classify the cats that randomly distributed in the image as annotation marks,
+                        although the cats look identical,
+                        our model classifies the cats that randomly distributed in the image as annotation marks,
                         while the cats on the main body as event marks.
                     </p>
 
@@ -859,28 +860,26 @@ SOLVER:
                     </div>
                 </div>
     
- 
-    
                 <p>
-                    However, this result does not mean that the model can recognize elements based on their localtions and relationships to other elements.
+                    However, this result does not mean that the model can recognize elements based on their locations and relationships with other elements.
                     <strong>Figure.c</strong> presents a more general case.
                     For this infographic, which has a similar representation with a linear timeline,
                     our model can correctly identify the annotation marks, annotation text, and annotation icons,
-                    but classifies all corncobs in the middle as annotation icons instead of event marks or main bodys.
+                    but classifies all corncobs in the middle as annotation icons instead of event marks or main body.
                     This example demonstrates that the DL model 
                     mainly recognizes elements based on their visual appearance,
-                    rather than their localtions and relationships to other elements.
+                    rather than their locations and relationships to other elements.
                     Thus, for the cats on the main body in <strong>Fig.b</strong>,
                     we conjecture that is the appearances of them together with other elements (<em>e.g.</em>, the main body and annotation marks) around
-                    that help our model to aheive correct classifications.
+                    that help our model to achieve correct classifications.
                 </p>
     
                 <p>
                     These examples relate to issues about <strong>networks on images with natural and graphical elements.</strong>
                     Besides, these examples also involve <strong>translation invariance</strong> <em>vs.</em> <strong>translation variance</strong>
                     in networks.
-                    Future research is needed to further understand these cases.
-                    We disccus these issues and potential solutions in <strong>Section 7.1</strong> in our paper.
+                    Future research is needed to understand these cases further.
+                    We discuss these issues and potential solutions in <strong>Section 7.1</strong> in our paper.
                 </p>
             </div>
         
@@ -900,30 +899,30 @@ SOLVER:
                         <div class="item-content">
                     <a data-fancybox="gallery" href="figs/examples/scale_o.jpg">
                         <img src="figs/examples/scale_o_tn.jpg" alt='missing' /> </a>
-                        <span class="legend">a</span></div>
+                        <span class="legend">d</span></div>
                 </div>
                 <div class="item item-2">       <div class="item-content">
                     <a data-fancybox="gallery" href="figs/examples/scale_u.jpg">
                         <img src="figs/examples/scale_u_tn.jpg" alt='missing' /> </a>
-                        <span class="legend">b</span></div>
+                        <span class="legend">e</span></div>
 
                 </div>
                 <div class="item item-1">       <div class="item-content">
                         <a data-fancybox="gallery" href="figs/examples/scale_d.jpg">
                             <img src="figs/examples/scale_d_tn.jpg" alt='missing' /> </a>
-                            <span class="legend">c</span></div>
+                            <span class="legend">f</span></div>
                     </div>
             </div>
 
             <p>
-                The <strong>Fig.a</strong> shows a timeline infographic 
-                and <strong>Fig.b</strong> presents the detection resutls of our model.
-                As shown in <strong>Fig.b</strong>,
+                The <strong>Fig.d</strong> shows a timeline infographic 
+                and <strong>Fig.e</strong> presents the detection results of our model.
+                As shown in <strong>Fig.e</strong>,
                 the annotation marks are not covered by the bboxes.
-                Our investigation reveals that this is because the size of the annotation marks are too large with respect to the image size.
-                There are no such kind of unusual large annotation marks in the training set.
+                Our investigation reveals that this is because the sizes of the annotation marks are too large with respect to the image size.
+                There is no such kind of unusual large annotation marks in the training set.
                 Thus, the model tends to use a relatively small bbox to cover the annotation marks.
-                In <strong>Fig.c</strong>, we apply a multi-scale testing technique
+                In <strong>Fig.f</strong>, we apply a multi-scale testing technique
                 by extending the image (resizing also works) to reduce the relative size of the annotation marks.
                 The model then can detect the marks correctly.
                 Multi-scale training is another method to tackle this kind of cases,
@@ -935,34 +934,34 @@ SOLVER:
                 <div class="item item-2">       <div class="item-content">
                     <a data-fancybox="gallery" href="figs/examples/bw_u_o.jpg">
                         <img src="figs/examples/bw_u_o_tn.jpg" alt='missing' /> </a>
-                        <span class="legend">a</span></div>
+                        <span class="legend">h</span></div>
                 </div>
                 <div class="item item-2">       <div class="item-content">
                     <a data-fancybox="gallery" href="figs/examples/bw_u.jpg">
                         <img src="figs/examples/bw_u_tn.jpg" alt='missing' /> </a>
-                        <span class="legend">b</span></div>
+                        <span class="legend">i</span></div>
                 </div>
 
                 <div class="item item-2">       <div class="item-content">
                     <a data-fancybox="gallery" href="figs/examples/bw_d_o.jpg">
                         <img src="figs/examples/bw_d_o_tn.jpg" alt='missing' /> </a>
-                        <span class="legend">c</span></div>
+                        <span class="legend">j</span></div>
                 </div>
                 <div class="item item-2">       <div class="item-content">
                     <a data-fancybox="gallery" href="figs/examples/bw_d.jpg">
                         <img src="figs/examples/bw_d_tn.jpg" alt='missing' /> </a>
-                        <span class="legend">d</span></div>
+                        <span class="legend">k</span></div>
                 </div>
             </div>
             <p>
-                <strong>Figure.a</strong> is a greyscale timeline and <strong>Fig.b</strong> shows the detection results.
-                As shown in the enlarging views in the top of <strong>Fig.b</strong>,
+                <strong>Figure.h</strong> is a greyscale timeline and <strong>Fig.i</strong> shows the detection results.
+                As shown in the enlarging views in the top of <strong>Fig.i</strong>,
                 some event marks, whose colors are similar to the background color, 
                 are undetected or incorrectly detected as a part of the annotation marks.
                 We discover that the lacking of greyscale training data is the major reason,
-                because in timelines with RGB channels it is unusal to have event marks with colors similar to the background color. 
-                Thus, we add some colors to the undetected event marks (<strong>Fig.c</strong>).
-                The model sucessufully detects these marks as our expected (<strong>Fig.d</strong>).
+                because in timelines with RGB channels it is unusual to have event marks with colors similar to the background color. 
+                Thus, we add some colors to the undetected event marks (<strong>Fig.j</strong>).
+                The model successfully detects these marks as our expected (<strong>Fig.k</strong>).
                 To handle this kind of cases,
                 a data augmentation strategy that converts RGB images to greyscale images 
                 can be applied in training samples.
@@ -976,6 +975,12 @@ SOLVER:
                 We leave this improvement techniques for future work.
             </p>
             </div>
+        </section>
+
+        <hr />
+        <section id="paper" class="paper">
+            <h2>Paper</h2>
+            <div class="gallary"></div>
         </section>
 
         <!-- <hr />
