@@ -437,11 +437,13 @@
                 <img style="width: 45%; margin-left: 12.5%;" src="figs/archit/class_head.jpg" alt='missing' />
             </a>
             <p>
-                We use Class Head that consists of two sibling fully connected (FC) layers to classify the type and
+                We use Class Head that consists of 
+                two sibling fully connected (FC) layers to classify the type and
                 orientation of a timeline infographic
                 by consuming the feature maps from ResNeXt-FPN.
-                One problem here is which feature map should be used given ResNeXt-FPN outputs four \(256d\) feature
-                maps.
+                2D average pooling is applied for the features before they are passed to FC layers, following the well-established <a href="https://github.com/pytorch/vision">torchvision</a> package.
+                One problem here is which feature map should be used in Class Head,
+                given ResNeXt-FPN outputs four \(256d\) feature maps.
                 Considering that the task is to classify the entire image,
                 we choose the last feature map that contains the strongest semantics and the largest scale.
                 Another alternative is to use the feature map from ResNeXt (<em>i.e.</em>, the \(2048d\) one).
