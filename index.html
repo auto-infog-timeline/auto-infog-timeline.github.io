@@ -927,9 +927,10 @@ SOLVER:
                 In <strong>Fig.f</strong>, we apply a multi-scale testing technique
                 by extending the image (resizing also works) to reduce the relative size of the annotation marks.
                 The model then can detect the marks correctly.
-                Multi-scale training is another method to tackle this kind of cases,
-                which is a data augmentation strategy.
-                Simply put, we can resize the training data to cover annotation marks with diverse sizes.
+                Multi-scale training, which is a data augmentation strategy.
+                is another method to tackle this kind of cases.
+                Simply put, we can resize the training images
+                to cover diverse sizes of annotation marks.
             </p>
 
             <div id="examples_bw" class="gallary" style="justify-content: space-around;">
@@ -959,10 +960,10 @@ SOLVER:
                 <strong>Figure.h</strong> is a greyscale timeline and <strong>Fig.i</strong> shows the detection results.
                 As shown in the enlarging views in the top of <strong>Fig.i</strong>,
                 some event marks, whose colors are similar to the background color, 
-                are undetected or incorrectly detected as a part of the annotation marks.
+                are undetected or incorrectly detected as a part of the annotation text.
                 We discover that the lacking of greyscale training data is the major reason,
                 because in timelines with RGB channels it is unusual to have event marks with colors similar to the background color. 
-                Thus, we add some colors to the undetected event marks (<strong>Fig.j</strong>).
+                Thus, we randomly add some colors to the undetected event marks (<strong>Fig.j</strong>).
                 The model successfully detects these marks as our expected (<strong>Fig.k</strong>).
                 To handle this kind of cases,
                 a data augmentation strategy that converts RGB images to greyscale images 
